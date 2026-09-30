@@ -1,3 +1,4 @@
+{% load static %}
 <!-- /home/neto/menu_interface/core/templates/core/menu.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -8,68 +9,317 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
+        /* ============================================================
+           VARIAVEIS DE TEMA (light padrao, dark ativado por JS)
+           ============================================================ */
+        :root {
+            --bg-1: #f5f7fa;
+            --bg-2: #c3cfe2;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --card-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+            --card-shadow-hover: 0 20px 40px rgba(15, 23, 42, 0.15);
+            --header-text: #0f172a;
+            --badge-bg: #f1f5f9;
+            --badge-text: #475569;
+            --divider: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-1: #0f172a;
+            --bg-2: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --header-text: #f8fafc;
+            --badge-bg: #334155;
+            --badge-text: #cbd5e1;
+            --divider: #334155;
+        }
+
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            color: var(--text);
+            transition: background 0.3s ease, color 0.3s ease;
         }
+
+        /* ============================================================
+           HEADER / TITULO
+           ============================================================ */
+        .hero-title {
+            color: var(--header-text);
+            letter-spacing: -0.02em;
+        }
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
         .card-hover {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            overflow: hidden;
             transition: all 0.3s ease;
             cursor: pointer;
+            box-shadow: var(--card-shadow);
         }
         .card-hover:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: transparent;
         }
-        .icon-circle {
-            width: 80px;
-            height: 80px;
+        .card-image-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            background: #0f172a;
+        }
+        .card-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.4s ease;
+        }
+        .card-hover:hover .card-image-wrapper img {
+            transform: scale(1.04);
+        }
+        .card-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 60%, rgba(15, 23, 42, 0.55) 100%);
+            pointer-events: none;
+        }
+        .card-body-custom {
+            padding: 1.1rem 1.2rem 1.25rem;
+        }
+        .card-title-custom {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--header-text);
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.01em;
+        }
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.9rem;
+        }
+
+        /* ============================================================
+           BADGES (stack + status)
+           ============================================================ */
+        .stack-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-bottom: 0.9rem;
+        }
+        .stack-badge {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+        .status-badge-custom {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.75rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        /* ============================================================
+           DESTAQUES
+           ============================================================ */
+        .destaques-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .destaques-list li {
+            padding-left: 1.1rem;
+            position: relative;
+            margin-bottom: 0.3rem;
+        }
+        .destaques-list li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* ============================================================
+           BOTOES
+           ============================================================ */
+        .btn-acessar {
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+        .btn-acessar:hover {
+            transform: translateX(2px);
+        }
+
+        /* ============================================================
+           FAIXA DE TECNOLOGIAS
+           ============================================================ */
+        .tech-strip {
+            margin-top: 4rem;
+            padding: 2rem 1rem;
+            border-top: 1px solid var(--divider);
+            text-align: center;
+        }
+        .tech-strip-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .tech-badge {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.4rem 0.85rem;
+            border-radius: 999px;
+            transition: all 0.2s ease;
+        }
+        .tech-badge:hover {
+            border-color: #10b981;
+            color: #10b981;
+            transform: translateY(-2px);
+        }
+
+        /* ============================================================
+           BOTAO DARK MODE (flutuante)
+           ============================================================ */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto;
-            font-size: 2.5rem;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.25s ease;
+            z-index: 1000;
+            font-size: 1.2rem;
         }
-        .status-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        .theme-toggle:hover {
+            transform: rotate(15deg) scale(1.08);
+            border-color: #10b981;
+            color: #10b981;
         }
-        .ambiente-badge {
-            font-size: 0.9rem;
-            padding: 0.5rem 1.5rem;
-        }
+
+        /* ============================================================
+           RODAPE
+           ============================================================ */
         footer {
             margin-top: auto;
-            padding: 20px 0;
+            padding: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover {
+            color: #10b981;
+        }
+
+        /* ============================================================
+           AJUSTE DE COR DO ALERT (modo local)
+           ============================================================ */
+        [data-theme="dark"] .alert-info {
+            background-color: #1e3a5f;
+            border-color: #334155;
+            color: #cbd5e1;
+        }
+        [data-theme="dark"] .alert-info strong {
+            color: #f1f5f9;
         }
     </style>
 </head>
 <body>
+
+    <!-- Botão de toggle do tema (dark/light) -->
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema">
+        <i class="bi bi-moon-stars" id="themeIcon"></i>
+    </button>
+
     <div class="container py-5">
         <!-- Cabeçalho -->
-        <div class="row">
+        <div class="row mb-5">
             <div class="col-12 text-center">
-                <h1 class="display-4 fw-bold mb-2">
-                    <i class="bi bi-grid-3x3-gap-fill text-primary"></i> 
+                <h1 class="display-4 fw-bold mb-2 hero-title">
                     Sistema Integrado
                 </h1>
-                <p class="lead text-muted mb-3">Selecione o módulo que deseja acessar</p>
-                
+                <p class="hero-subtitle mb-3">
+                    Full-stack · Django · Postgres · MongoDB · IA · Dados públicos
+                </p>
+
                 <!-- Badge do Ambiente -->
                 <span class="badge bg-{{ ambiente_cor }} ambiente-badge mb-4">
                     {{ ambiente }}
                 </span>
-                
+
                 <!-- Dicas de portas (apenas local) -->
                 {% if is_local %}
-                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <div class="alert alert-info alert-dismissible fade show mx-auto" role="alert" style="max-width: 640px;">
                     <i class="bi bi-info-circle"></i>
                     <strong>Desenvolvimento Local:</strong>
-                    AS/400: porta <strong>8001</strong> | 
-                    CNPJ: porta <strong>8002</strong> | 
+                    AS/400: porta <strong>8001</strong> |
+                    CNPJ: porta <strong>8002</strong> |
                     Menu: porta <strong>8000</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -78,58 +328,139 @@
         </div>
 
         <!-- Cards dos projetos -->
-        <div class="row g-4 justify-content-center mt-3">
+        <div class="row g-4 justify-content-center">
             {% for projeto in projetos %}
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-hover h-100 shadow border-{{ projeto.cor }} border-3">
-                    <div class="card-body text-center position-relative">
-                        <!-- Ícone -->
-                        <div class="icon-circle bg-{{ projeto.cor }} bg-opacity-10 text-{{ projeto.cor }}">
-                            <i class="{{ projeto.icon }}"></i>
-                        </div>
-                        
-                        <!-- Título -->
-                        <h5 class="card-title mt-3 fw-bold">{{ projeto.nome }}</h5>
-                        
-                        <!-- Descrição -->
-                        <p class="card-text text-muted small">{{ projeto.descricao }}</p>
-                        
-                        <!-- Status -->
-                        <span class="badge bg-{{ projeto.status_cor }} status-badge"
+            <div class="col-md-6 col-lg-5">
+                <div class="card card-hover h-100">
+                    <!-- Imagem de capa -->
+                    <div class="card-image-wrapper">
+                        <img src="{% static 'images/' %}{{ projeto.imagem }}"
+                             alt="{{ projeto.nome }}"
+                             loading="lazy"
+                             onerror="this.style.display='none'">
+                        <div class="card-image-overlay"></div>
+                        <span class="badge bg-{{ projeto.status_cor }} status-badge-custom"
                               title="{{ projeto.status }}">
                             {{ projeto.status }}
                         </span>
-                        
-                        <!-- Botão -->
-                        <div class="mt-3">
-                            <a href="{{ projeto.url }}" class="btn btn-outline-{{ projeto.cor }} w-100" target="_blank">
-                                <i class="bi bi-arrow-right-circle"></i> Acessar
-                            </a>
+                    </div>
+
+                    <!-- Corpo do card -->
+                    <div class="card-body-custom">
+                        <h5 class="card-title-custom">
+                            <i class="{{ projeto.icon }} me-2"></i>{{ projeto.nome }}
+                        </h5>
+                        <p class="card-desc">{{ projeto.descricao }}</p>
+
+                        <!-- Stack (pílulas) -->
+                        <div class="stack-badges">
+                            {% for tech in projeto.stack %}
+                            <span class="stack-badge">{{ tech }}</span>
+                            {% endfor %}
                         </div>
+
+                        <!-- Destaques técnicos -->
+                        <ul class="destaques-list">
+                            {% for item in projeto.destaques %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Botão de acesso -->
+                        <a href="{{ projeto.url }}"
+                           class="btn btn-success btn-acessar"
+                           target="_blank"
+                           rel="noopener">
+                            Acessar <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
 
+        <!-- Faixa de tecnologias -->
+        <div class="tech-strip">
+            <div class="tech-strip-title">Tecnologias usadas no projeto</div>
+            <div class="tech-badges">
+                <span class="tech-badge">Django 5.1 / 6.0</span>
+                <span class="tech-badge">Python 3.13</span>
+                <span class="tech-badge">PostgreSQL 15</span>
+                <span class="tech-badge">MongoDB 8</span>
+                <span class="tech-badge">Redis 7</span>
+                <span class="tech-badge">DB2 (IBM i)</span>
+                <span class="tech-badge">DeepSeek</span>
+                <span class="tech-badge">OpenAI SDK</span>
+                <span class="tech-badge">Chart.js</span>
+                <span class="tech-badge">Bootstrap 5.3</span>
+                <span class="tech-badge">JPype / JDBC</span>
+                <span class="tech-badge">Docker</span>
+                <span class="tech-badge">Gunicorn</span>
+                <span class="tech-badge">Nginx</span>
+                <span class="tech-badge">Let's Encrypt</span>
+                <span class="tech-badge">Git / GitHub</span>
+            </div>
+        </div>
+
         <!-- Rodapé -->
-        <footer class="text-center text-muted small">
+        <footer class="text-center small">
             <hr>
-            <p>
-                <i class="bi bi-info-circle"></i> 
-                Versão {{ versao }} | 
-                Servidor: {{ request.get_host }} |
+            <p class="mb-1">
+                <i class="bi bi-info-circle"></i>
+                Versão {{ versao }} ·
+                Servidor: {{ request.get_host }} ·
                 <span class="badge bg-{{ ambiente_cor }}">{{ ambiente }}</span>
             </p>
-            <p class="text-muted">
-                <small>
-                    <i class="bi bi-github"></i> 
-                    Projetos: AS/400 Interface | CNPJ Interface | Menu Principal
-                </small>
+            <p class="mb-0">
+                <i class="bi bi-github"></i>
+                <a href="https://github.com/antoniorosasse" target="_blank" rel="noopener">
+                    github.com/antoniorosasse
+                </a>
             </p>
         </footer>
     </div>
+    <script>
+        (function () {
+            'use strict';
 
+            const STORAGE_KEY = 'menu-theme';
+            const html = document.documentElement;
+            const toggle = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+
+            // Aplica o tema e atualiza o icone
+            function aplicarTema(tema) {
+                if (tema === 'dark') {
+                    html.setAttribute('data-theme', 'dark');
+                    icon.className = 'bi bi-sun';
+                } else {
+                    html.removeAttribute('data-theme');
+                    icon.className = 'bi bi-moon-stars';
+                }
+            }
+
+            // Le o tema salvo (ou usa preferencia do SO)
+            function temaInicial() {
+                const salvo = localStorage.getItem(STORAGE_KEY);
+                if (salvo === 'dark' || salvo === 'light') return salvo;
+                // Se nao tem salvo, respeita o SO
+                return window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light';
+            }
+
+            // Inicializa
+            aplicarTema(temaInicial());
+
+            // Toggle no clique
+            toggle.addEventListener('click', function () {
+                const atual = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                const novo = atual === 'dark' ? 'light' : 'dark';
+                aplicarTema(novo);
+                localStorage.setItem(STORAGE_KEY, novo);
+            });
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
