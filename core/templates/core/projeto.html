@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ projeto.nome }} - Sistema Integrado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-1: #f5f7fa;
+            --bg-2: #c3cfe2;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --card-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+            --header-text: #0f172a;
+            --badge-bg: #f1f5f9;
+            --badge-text: #475569;
+            --divider: #e2e8f0;
+        }
+        [data-theme="dark"] {
+            --bg-1: #0f172a;
+            --bg-2: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            --header-text: #f8fafc;
+            --badge-bg: #334155;
+            --badge-text: #cbd5e1;
+            --divider: #334155;
+        }
+        body {
+            background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+            min-height: 100vh;
+            color: var(--text);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .hero-title {
+            color: var(--header-text);
+            letter-spacing: -0.02em;
+        }
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+        .btn-voltar {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .btn-voltar:hover {
+            color: #10b981;
+        }
+        .card-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+        .stack-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+        .stack-badge {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+        .destaques-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        .destaques-list li {
+            padding-left: 1.2rem;
+            position: relative;
+            margin-bottom: 0.35rem;
+        }
+        .destaques-list li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        .galeria {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+        .galeria-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            box-shadow: var(--card-shadow);
+        }
+        .galeria-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+        }
+        .galeria-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .galeria-item .legenda {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+        .btn-acessar-grande {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.65rem 1.5rem;
+            transition: all 0.2s ease;
+        }
+        .btn-acessar-grande:hover {
+            transform: translateX(2px);
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.25s ease;
+            z-index: 1000;
+            font-size: 1.2rem;
+        }
+        .theme-toggle:hover {
+            transform: rotate(15deg) scale(1.08);
+            border-color: #10b981;
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botão de toggle do tema -->
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema">
+        <i class="bi bi-moon-stars" id="themeIcon"></i>
+    </button>
+
+    <div class="container py-4">
+        <!-- Botão voltar -->
+        <div class="mb-4">
+            <a href="{% url 'core:menu' %}" class="btn-voltar">
+                <i class="bi bi-arrow-left"></i> Voltar ao menu
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="hero-title mb-2">
+                    <i class="{{ projeto.icon }} me-2 text-{{ projeto.cor }}"></i>{{ projeto.nome }}
+                </h1>
+                <p class="hero-subtitle mb-3">{{ projeto.descricao }}</p>
+
+                <!-- Status + Acesso -->
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <span class="badge bg-{{ projeto.status_cor }}">
+                        {{ projeto.status }}
+                    </span>
+                    <a href="{{ projeto.url }}"
+                       class="btn btn-success btn-acessar-grande"
+                       target="_blank"
+                       rel="noopener">
+                        Acessar aplicação <i class="bi bi-box-arrow-up-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stack + Destaques -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card-section h-100">
+                    <h5 class="mb-3">
+                        <i class="bi bi-layers text-{{ projeto.cor }}"></i> Stack
+                    </h5>
+                    <div class="stack-badges">
+                        {% for tech in projeto.stack %}
+                        <span class="stack-badge">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-section h-100">
+                    <h5 class="mb-3">
+                        <i class="bi bi-stars text-{{ projeto.cor }}"></i> Destaques técnicos
+                    </h5>
+                    <ul class="destaques-list">
+                        {% for item in projeto.destaques %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Galeria -->
+        {% if projeto.galeria %}
+        <div class="mb-4">
+            <h4 class="hero-title mb-3">
+                <i class="bi bi-images"></i> Galeria de telas
+                <small class="text-muted fs-6">({{ projeto.galeria|length }} imagens)</small>
+            </h4>
+            <div class="galeria">
+                {% for img in projeto.galeria %}
+                <div class="galeria-item">
+                    <img src="{% static img.arquivo %}" alt="{{ img.titulo }}" loading="lazy">
+                    <div class="legenda">{{ img.titulo }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Rodapé -->
+        <footer class="text-center small mt-5" style="color: var(--text-muted);">
+            <hr style="border-color: var(--divider);">
+            <p class="mb-0">
+                Versão {{ versao }} · {{ ambiente }} · {{ host_atual }}
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+            const STORAGE_KEY = 'menu-theme';
+            const html = document.documentElement;
+            const toggle = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+
+            function aplicarTema(tema) {
+                if (tema === 'dark') {
+                    html.setAttribute('data-theme', 'dark');
+                    icon.className = 'bi bi-sun';
+                } else {
+                    html.removeAttribute('data-theme');
+                    icon.className = 'bi bi-moon-stars';
+                }
+            }
+
+            function temaInicial() {
+                const salvo = localStorage.getItem(STORAGE_KEY);
+                if (salvo === 'dark' || salvo === 'light') return salvo;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            aplicarTema(temaInicial());
+            toggle.addEventListener('click', function () {
+                const atual = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                const novo = atual === 'dark' ? 'light' : 'dark';
+                aplicarTema(novo);
+                localStorage.setItem(STORAGE_KEY, novo);
+            });
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

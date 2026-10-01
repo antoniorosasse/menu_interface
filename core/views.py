@@ -14,6 +14,7 @@ import logging
 from urllib.parse import urlparse
 
 from django.core.cache import cache
+from django.http import Http404
 from django.shortcuts import render
 
 
@@ -131,14 +132,13 @@ def _check_health_deep_cached(url: str) -> dict:
 # VIEW
 # ============================================================
 
-def menu_principal(request):
+def _montar_contexto(request):
     """
-    Pagina inicial com links para todos os projetos.
+    Monta o dicionario de contexto usado pelo menu E pela pagina de detalhe.
 
-    - Em LOCAL (DEBUG=True): cada projeto em uma porta diferente, mesmo host.
-    - Em PRODUCAO: menu na raiz de arosasse.tech, outros projetos em subdominios.
+    Contem: projetos (com stack, destaques, galeria), ambiente, versao, etc.
+    Extraido do antigo menu_principal pra ser reusado em detalhe_projeto.
     """
-
     # ============================================================
     # AMBIENTE
     # ============================================================
@@ -188,13 +188,12 @@ def menu_principal(request):
         'chat_emp': f'{chat_ia_base}/chat/health/deep/',
     }
 
-
     # ============================================================
     # HEALTH CHECK (com cache)
     # ============================================================
     saude = {k: _check_health_deep_cached(u) for k, u in urls_health.items()}
 
-    def _status_do_card(chave: str) -> dict:    
+    def _status_do_card(chave: str) -> dict:
         """Devolve dict com status/status_cor prontos pro template."""
         s = saude.get(chave, {})
         st = s.get('status', 'offline')
@@ -210,33 +209,45 @@ def menu_principal(request):
     projetos = [
         {
             'id': 'as400',
-            'nome': 'AS/400 · Pessoas',
-            'descricao': 'CRUD completo de pessoas que fala com um banco DB2 hospedado num IBM i remoto (pub400.com) via JDBC.',
+            'nome': 'IBM i · DB2 · Pessoas',
+            'descricao': 'CRUD completo de uma tabela de pessoas armazenadas em um banco DB2 hospedado num IBM i (AS/400) remoto (pub400.com) via JDBC.',
             'url': urls['as400'],
             'icon': 'bi bi-person-lines-fill',
             'cor': 'success',
-            'imagem': 'CardDB2AS400_1.png',
+            'imagem': 'ibmi-db2/consulta-lista.png',
             'stack': ['Django 6.0', 'JPype', 'jt400', 'DB2 (IBM i)', 'Redis'],
             'destaques': [
                 'Conexao JDBC real a um mainframe IBM i (pub400.com)',
                 'CRUD completo com validacao de CPF e CEP',
                 'Cache Redis e pool de conexoes JDBC',
             ],
+            'galeria': [
+                {'arquivo': 'ibmi-db2/consulta-filtros.png', 'titulo': 'Filtros de consulta'},
+                {'arquivo': 'ibmi-db2/consulta-lista.png',   'titulo': 'Lista de pessoas'},
+                {'arquivo': 'ibmi-db2/consulta-detalhe.png', 'titulo': 'Detalhe da pessoa'},
+                {'arquivo': 'ibmi-db2/alteracao.png',        'titulo': 'Alteracao'},
+                {'arquivo': 'ibmi-db2/exclusao.png',         'titulo': 'Exclusao'},
+                {'arquivo': 'ibmi-db2/api.png',              'titulo': 'API de dados'},
+            ],
             **_status_do_card('as400'),
         },
         {
             'id': 'chat_pessoas',
-            'nome': 'Chat com IA · Pessoas (AS/400)',
+            'nome': 'Chat com IA · Pessoas (IBM i · DB2)',
             'descricao': 'Pergunte em linguagem natural sobre os dados de pessoas do DB2 e receba a resposta em SQL executado.',
             'url': urls['chat_pes'],
             'icon': 'bi bi-robot',
             'cor': 'info',
-            'imagem': 'CardDB2AS400_Chat_1.png',
+            'imagem': 'chat-ibmi-db2/chat-1.png',
             'stack': ['Django 6.0', 'OpenAI SDK', 'DeepSeek', 'DB2 (IBM i)', 'Redis'],
             'destaques': [
                 'Traducao PT-BR -> SQL com contexto da conversa',
                 'Historico persistido (contexto de 10 mensagens)',
                 'Fallback automatico quando o LLM falha',
+            ],
+            'galeria': [
+                {'arquivo': 'chat-ibmi-db2/chat-1.png',         'titulo': 'Interface do chat'},
+                {'arquivo': 'chat-ibmi-db2/chat-resposta.png',  'titulo': 'Resposta da IA'},
             ],
             **_status_do_card('chat_pes'),
         },
@@ -247,12 +258,19 @@ def menu_principal(request):
             'url': urls['cnpj'],
             'icon': 'bi bi-building',
             'cor': 'primary',
-            'imagem': 'Card_CNPJ_1.png',
+            'imagem': 'cnpj/consulta-filtros.png',
             'stack': ['Django 5.1', 'PostgreSQL 15', 'Redis', 'Keyset pagination'],
             'destaques': [
                 '38M de linhas com keyset pagination (sem OFFSET)',
                 'Indices parciais e CTEs MATERIALIZED',
                 'Estatisticas agregadas com cache de 1h',
+            ],
+            'galeria': [
+                {'arquivo': 'cnpj/consulta-filtros.png',      'titulo': 'Filtros de consulta'},
+                {'arquivo': 'cnpj/consulta-lista.png',        'titulo': 'Lista de empresas'},
+                {'arquivo': 'cnpj/detalhe-dados.png',         'titulo': 'Detalhe: dados da empresa'},
+                {'arquivo': 'cnpj/detalhe-endereco.png',      'titulo': 'Detalhe: endereco'},
+                {'arquivo': 'cnpj/detalhe-estab-socios.png',  'titulo': 'Detalhe: estabelecimentos e socios'},
             ],
             **_status_do_card('cnpj'),
         },
@@ -263,7 +281,7 @@ def menu_principal(request):
             'url': urls['chat_emp'],
             'icon': 'bi bi-chat-dots',
             'cor': 'warning',
-            'imagem': 'Card_CNPJ_Chat1.png',
+            'imagem': 'chat-cnpj/chat-1.png',
             'stack': ['Django 5.1', 'MongoDB 8', 'DeepSeek', 'Chart.js'],
             'destaques': [
                 'Pipeline SQL com 5 camadas de seguranca',
@@ -271,11 +289,16 @@ def menu_principal(request):
                 'Resposta em texto natural + graficos (Chart.js)',
                 'Recusa perguntas fora do schema (RECUSAR:)',
             ],
+            'galeria': [
+                {'arquivo': 'chat-cnpj/chat-1.png',          'titulo': 'Chat: perguntas, respostas, historico'},
+                {'arquivo': 'chat-cnpj/chat-resposta.png',   'titulo': 'Resposta da IA'},
+                {'arquivo': 'chat-cnpj/chat-graficos.png',   'titulo': 'Graficos'},
+            ],
             **_status_do_card('chat_emp'),
         },
     ]
 
-    context = {
+    return {
         'projetos': projetos,
         'versao': '1.2',
         'ambiente': ambiente_nome,
@@ -284,4 +307,23 @@ def menu_principal(request):
         'host_atual': host_completo,
     }
 
+
+def menu_principal(request):
+    """Pagina inicial com links para todos os projetos."""
+    context = _montar_contexto(request)
     return render(request, 'core/menu.html', context)
+
+
+def detalhe_projeto(request, projeto_id):
+    """
+    Pagina de detalhe de um projeto do portifolio.
+
+    Reusa _montar_contexto (mesma logica do menu). Se o id nao existir, 404.
+    """
+    context = _montar_contexto(request)
+    projeto = next((p for p in context['projetos'] if p.get('id') == projeto_id), None)
+    if projeto is None:
+        raise Http404(f'Projeto nao encontrado: {projeto_id}')
+    context['projeto'] = projeto
+    return render(request, 'core/projeto.html', context)
+

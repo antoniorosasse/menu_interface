@@ -334,7 +334,7 @@
                 <div class="card card-hover h-100">
                     <!-- Imagem de capa -->
                     <div class="card-image-wrapper">
-                        <img src="{% static 'images/' %}{{ projeto.imagem }}"
+                        <img src="{% static projeto.imagem %}"
                              alt="{{ projeto.nome }}"
                              loading="lazy"
                              onerror="this.style.display='none'">
@@ -367,12 +367,19 @@
                         </ul>
 
                         <!-- Botão de acesso -->
-                        <a href="{{ projeto.url }}"
-                           class="btn btn-success btn-acessar"
-                           target="_blank"
-                           rel="noopener">
-                            Acessar <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ projeto.url }}"
+                               class="btn btn-success btn-acessar flex-fill"
+                               target="_blank"
+                               rel="noopener">
+                                Acessar <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                            <a href="{% url 'core:detalhe_projeto' projeto.id %}"
+                               class="btn btn-outline-secondary btn-acessar"
+                               title="Ver detalhes do projeto">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
