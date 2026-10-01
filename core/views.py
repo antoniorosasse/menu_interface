@@ -72,6 +72,60 @@ def _check_url_cached(url: str) -> dict:
         cache.set(chave, resultado, CACHE_TTL)
     return resultado
 
+def _check_health_deep(url: str) -> dict:
+    """
+    Faz um GET na URL (deep health check) e le o JSON.
+
+    O endpoint /health/deep/ devolve HTTP 200 SEMPRE, mas o JSON tem
+    campo 'status': 'ok' | 'error'. So consideramos online se status == 'ok'.
+
+    Devolve:
+      {'status': 'online' | 'lento' | 'offline', 'code': int | None, 'ms': int,
+       'erro': str | None}
+    """
+    import time
+    import json
+    import urllib.request
+    import urllib.error
+
+    inicio = time.monotonic()
+    req = urllib.request.Request(url, method='GET', headers={'User-Agent': 'menu-health/1.0'})
+
+    try:
+        with urllib.request.urlopen(req, timeout=HEALTH_TIMEOUT) as resp:
+            code = resp.status
+            body = resp.read().decode('utf-8', errors='ignore')
+    except urllib.error.HTTPError as e:
+        code = e.code
+        return {'status': 'offline', 'code': code, 'ms': int((time.monotonic() - inicio) * 1000), 'erro': f'HTTP {code}'}
+    except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError) as e:
+        return {'status': 'offline', 'code': None, 'ms': int((time.monotonic() - inicio) * 1000), 'erro': str(e)[:100]}
+
+    ms = int((time.monotonic() - inicio) * 1000)
+
+    if code != 200:
+        return {'status': 'offline', 'code': code, 'ms': ms, 'erro': f'HTTP {code}'}
+
+    # Le o JSON
+    try:
+        dados = json.loads(body)
+    except (ValueError, TypeError):
+        return {'status': 'offline', 'code': code, 'ms': ms, 'erro': 'JSON invalido'}
+
+    if dados.get('status') != 'ok':
+        return {'status': 'offline', 'code': code, 'ms': ms, 'erro': dados.get('erro') or dados.get('status') or 'status != ok'}
+
+    return {'status': 'online' if ms < 2000 else 'lento', 'code': code, 'ms': ms, 'erro': None}
+
+
+def _check_health_deep_cached(url: str) -> dict:
+    """Versao cacheada (60s) do _check_health_deep."""
+    chave = f'{CACHE_KEY_PREFIX}deep_{url}'
+    resultado = cache.get(chave)
+    if resultado is None:
+        resultado = _check_health_deep(url)
+        cache.set(chave, resultado, CACHE_TTL)
+    return resultado
 
 # ============================================================
 # VIEW
@@ -128,17 +182,17 @@ def menu_principal(request):
     # URLS DE HEALTH CHECK (endpoint leve que so responde 'ok')
     # ============================================================
     urls_health = {
-        'as400':    f'{as400_base}/health/',
-        'chat_pes': f'{as400_base}/health/',      # mesmo app do as400
-        'cnpj':     f'{cnpj_base}/health/',
-        'chat_emp': f'{chat_ia_base}/health/',
+        'as400':    f'{as400_base}/health/deep/',
+        'chat_pes': f'{as400_base}/health/deep/',      # mesmo app do as400
+        'cnpj':     f'{cnpj_base}/health/deep/',
+        'chat_emp': f'{chat_ia_base}/chat/health/deep/',
     }
 
 
     # ============================================================
     # HEALTH CHECK (com cache)
     # ============================================================
-    saude = {k: _check_url_cached(u) for k, u in urls_health.items()}
+    saude = {k: _check_health_deep_cached(u) for k, u in urls_health.items()}
 
     def _status_do_card(chave: str) -> dict:    
         """Devolve dict com status/status_cor prontos pro template."""
