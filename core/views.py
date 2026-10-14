@@ -26,7 +26,8 @@ logger = logging.getLogger(__name__)
 # ============================================================
 
 CACHE_KEY_PREFIX = 'menu_health_'
-CACHE_TTL = 60          # segundos
+CACHE_TTL = 60          # segundos (estado 'online' ou 'lento')
+CACHE_TTL_OFFLINE = 10  # segundos (estado 'offline' - recupera rapido)
 HEALTH_TIMEOUT = 5      # segundos por tentativa
 
 
@@ -60,7 +61,7 @@ def _check_url(url: str) -> dict:
     ms = int((time.monotonic() - inicio) * 1000)
 
     if code in (200, 301, 302, 401, 403):
-        return {'status': 'online' if ms < 2000 else 'lento', 'code': code, 'ms': ms}
+        return {'status': 'online' if ms < 4000 else 'lento', 'code': code, 'ms': ms}
     return {'status': 'offline', 'code': code, 'ms': ms}
 
 
@@ -116,16 +117,25 @@ def _check_health_deep(url: str) -> dict:
     if dados.get('status') != 'ok':
         return {'status': 'offline', 'code': code, 'ms': ms, 'erro': dados.get('erro') or dados.get('status') or 'status != ok'}
 
-    return {'status': 'online' if ms < 2000 else 'lento', 'code': code, 'ms': ms, 'erro': None}
+    return {'status': 'online' if ms < 4000 else 'lento', 'code': code, 'ms': ms, 'erro': None}
 
 
 def _check_health_deep_cached(url: str) -> dict:
-    """Versao cacheada (60s) do _check_health_deep."""
+    """
+    Versao cacheada do _check_health_deep.
+
+    - Resultado 'online' ou 'lento': cache de 60s (CACHE_TTL).
+    - Resultado 'offline': cache de 10s (CACHE_TTL_OFFLINE), pra
+      recuperar rapido se o backend estava apenas subindo.
+    """
     chave = f'{CACHE_KEY_PREFIX}deep_{url}'
     resultado = cache.get(chave)
     if resultado is None:
         resultado = _check_health_deep(url)
-        cache.set(chave, resultado, CACHE_TTL)
+        if resultado.get('status') == 'offline':
+            cache.set(chave, resultado, CACHE_TTL_OFFLINE)
+        else:
+            cache.set(chave, resultado, CACHE_TTL)
     return resultado
 
 # ============================================================
