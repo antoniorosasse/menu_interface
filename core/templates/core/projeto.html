@@ -105,6 +105,8 @@
             gap: 1.25rem;
         }
         .galeria-item {
+            position: relative;
+            cursor: zoom-in;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 10px;
@@ -127,6 +129,71 @@
             font-size: 0.85rem;
             color: var(--text);
             font-weight: 500;
+        }
+        .galeria-zoom {
+            position: absolute;
+            top: 0.6rem;
+            right: 0.6rem;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.72);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .galeria-item:hover .galeria-zoom {
+            opacity: 1;
+        }
+        /* Lightbox / carrossel da galeria */
+        .galeria-modal .carousel-item {
+            height: 80vh;
+            background: #0f172a;
+        }
+        .galeria-modal .carousel-item img {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+        }
+        .galeria-modal .carousel-caption {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 1.5rem 1rem 1rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+        }
+        /* Setas de navegação sempre visíveis */
+        .galeria-modal .carousel-control-prev,
+        .galeria-modal .carousel-control-next {
+            top: 50%;
+            bottom: auto;
+            transform: translateY(-50%);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            opacity: 1;
+        }
+        .galeria-modal .carousel-control-prev {
+            left: 1rem;
+        }
+        .galeria-modal .carousel-control-next {
+            right: 1rem;
+        }
+        .galeria-modal .carousel-control-prev:hover,
+        .galeria-modal .carousel-control-next:hover {
+            background: rgba(15, 23, 42, 0.9);
+        }
+        .galeria-modal .carousel-control-prev-icon,
+        .galeria-modal .carousel-control-next-icon {
+            width: 1.75rem;
+            height: 1.75rem;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
         }
         .btn-acessar-grande {
             border-radius: 8px;
@@ -197,6 +264,12 @@
                        rel="noopener">
                         Acessar aplicação <i class="bi bi-box-arrow-up-right ms-1"></i>
                     </a>
+                    <a href="{{ projeto.repo }}"
+                       class="btn btn-outline-secondary btn-acessar-grande"
+                       target="_blank"
+                       rel="noopener">
+                        <i class="bi bi-github me-1"></i>Código no GitHub
+                    </a>
                 </div>
             </div>
         </div>
@@ -238,11 +311,63 @@
             </h4>
             <div class="galeria">
                 {% for img in projeto.galeria %}
-                <div class="galeria-item">
+                <div class="galeria-item"
+                     role="button"
+                     tabindex="0"
+                     data-bs-toggle="modal"
+                     data-bs-target="#galeriaModal"
+                     data-index="{{ forloop.counter0 }}"
+                     title="Clique para ampliar">
                     <img src="{% static img.arquivo %}" alt="{{ img.titulo }}" loading="lazy">
+                    <span class="galeria-zoom"><i class="bi bi-zoom-in"></i></span>
                     <div class="legenda">{{ img.titulo }}</div>
                 </div>
                 {% endfor %}
+            </div>
+
+            <!-- Lightbox / carrossel da galeria -->
+            <div class="modal fade galeria-modal" id="galeriaModal" tabindex="-1" aria-labelledby="galeriaModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content border-0" style="background: transparent;">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title text-white" id="galeriaModalLabel">
+                                <i class="bi bi-images me-2"></i>{{ projeto.nome }}
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+                        <div class="modal-body p-0">
+                            <div id="galeriaCarousel" class="carousel slide" data-bs-interval="false">
+                                <div class="carousel-indicators">
+                                    {% for img in projeto.galeria %}
+                                    <button type="button"
+                                            data-bs-target="#galeriaCarousel"
+                                            data-bs-slide-to="{{ forloop.counter0 }}"
+                                            class="{% if forloop.first %}active{% endif %}"
+                                            aria-label="Imagem {{ forloop.counter }}"></button>
+                                    {% endfor %}
+                                </div>
+                                <div class="carousel-inner">
+                                    {% for img in projeto.galeria %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <img src="{% static img.arquivo %}" class="d-block" alt="{{ img.titulo }}">
+                                        <div class="carousel-caption">
+                                            <p class="mb-0">{{ img.titulo }}</p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#galeriaCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Anterior</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#galeriaCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Próxima</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         {% endif %}
@@ -291,5 +416,33 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            'use strict';
+            const modalEl = document.getElementById('galeriaModal');
+            if (!modalEl) return;
+
+            // Abre o carrossel no slide clicado
+            modalEl.addEventListener('shown.bs.modal', function (event) {
+                const trigger = event.relatedTarget;
+                const index = trigger ? Number(trigger.getAttribute('data-index')) || 0 : 0;
+                const carousel = bootstrap.Carousel.getOrCreateInstance(
+                    document.getElementById('galeriaCarousel'),
+                    { interval: false }
+                );
+                carousel.to(index);
+            });
+
+            // Acessibilidade: Enter/Espaço abrem o item da galeria
+            document.querySelectorAll('.galeria-item[data-bs-toggle="modal"]').forEach(function (item) {
+                item.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        item.click();
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
