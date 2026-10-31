@@ -226,7 +226,7 @@ def _montar_contexto(request):
             'icon': 'bi bi-building',
             'cor': 'primary',
             'imagem': 'cnpj/consulta-filtros.png',
-            'stack': ['Django 5.1', 'PostgreSQL 15', 'Redis', 'Keyset pagination'],
+            'stack': ['Django 6.1', 'PostgreSQL 15', 'pgvector', 'Keyset pagination'],
             'destaques': [
                 '38M de linhas com keyset pagination (sem OFFSET)',
                 'Indices parciais e CTEs MATERIALIZED',
@@ -250,9 +250,9 @@ def _montar_contexto(request):
             'icon': 'bi bi-chat-dots',
             'cor': 'warning',
             'imagem': 'chat-cnpj/chat-1.png',
-            'stack': ['Django 5.1', 'MongoDB 8', 'DeepSeek', 'Chart.js'],
+            'stack': ['Django 6.1', 'MongoDB 8', 'DeepSeek', 'Chart.js'],
             'destaques': [
-                'Pipeline SQL com 5 camadas de seguranca',
+                'Pipeline SQL com 4 camadas de validacao',
                 'Historico em MongoDB (Repository pattern)',
                 'Resposta em texto natural + graficos (Chart.js)',
                 'Recusa perguntas fora do schema (RECUSAR:)',
@@ -273,11 +273,11 @@ def _montar_contexto(request):
             'icon': 'bi bi-person-lines-fill',
             'cor': 'success',
             'imagem': 'ibmi-db2/consulta-lista.png',
-            'stack': ['Django 6.0', 'JPype', 'jt400', 'DB2 (IBM i)', 'Redis'],
+            'stack': ['Django 6.0', 'JPype', 'jt400', 'DB2 (IBM i)', 'JDBC'],
             'destaques': [
                 'Conexao JDBC real a um mainframe IBM i (pub400.com)',
                 'CRUD completo com validacao de CPF e CEP',
-                'Cache Redis e pool de conexoes JDBC',
+                'Cache em memoria (LocMem) e pool de conexoes JDBC',
             ],
             'galeria': [
                 {'arquivo': 'ibmi-db2/consulta-filtros.png', 'titulo': 'Filtros de consulta'},
@@ -298,7 +298,7 @@ def _montar_contexto(request):
             'icon': 'bi bi-robot',
             'cor': 'info',
             'imagem': 'chat-ibmi-db2/chat-1.png',
-            'stack': ['Django 6.0', 'OpenAI SDK', 'DeepSeek', 'DB2 (IBM i)', 'Redis'],
+            'stack': ['Django 6.0', 'OpenAI SDK', 'DeepSeek', 'DB2 (IBM i)', 'JDBC'],
             'destaques': [
                 'Traducao PT-BR -> SQL com contexto da conversa',
                 'Historico persistido (contexto de 10 mensagens)',
