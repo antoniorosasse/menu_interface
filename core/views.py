@@ -220,47 +220,48 @@ def _montar_contexto(request):
         {
             'id': 'cnpj',
             'nome': 'Consulta Empresas · Receita Federal',
-            'descricao': 'Consulta de CNPJ sobre a base publica da RFB (38 milhoes de estabelecimentos) com filtros, keyset pagination e estatisticas.',
+            'descricao': 'Consulta de CNPJ sobre a base pública da RFB (38,5 milhões de estabelecimentos) com filtros, keyset pagination e estatísticas.',
             'url': urls['cnpj'],
             'repo': 'https://github.com/antoniorosasse/cnpj_interface',
             'icon': 'bi bi-building',
             'cor': 'primary',
             'imagem': 'cnpj/consulta-filtros.png',
-            'stack': ['Django 6.1', 'PostgreSQL 15', 'pgvector', 'Keyset pagination'],
+            'stack': ['Django 6.1', 'PostgreSQL 15', 'psycopg2 (SQL puro)', 'Keyset pagination'],
             'destaques': [
-                '38M de linhas com keyset pagination (sem OFFSET)',
-                'Indices parciais e CTEs MATERIALIZED',
-                'Estatisticas agregadas com cache de 1h',
+                '38,5M de linhas com keyset pagination (nenhum OFFSET no código)',
+                'Índices parciais (WHERE cd_matriz_filial = 1) e CTE MATERIALIZED',
+                'Estatísticas pré-agregadas em c_estatisticas_totais (<5 ms)',
+                'Filtro por cidade com semi-join (cnpj_basico IN ...) em 0,3 s',
             ],
             'galeria': [
                 {'arquivo': 'cnpj/consulta-filtros.png',      'titulo': 'Filtros de consulta'},
                 {'arquivo': 'cnpj/consulta-lista.png',        'titulo': 'Lista de empresas'},
                 {'arquivo': 'cnpj/detalhe-dados.png',         'titulo': 'Detalhe: dados da empresa'},
-                {'arquivo': 'cnpj/detalhe-endereco.png',      'titulo': 'Detalhe: endereco'},
-                {'arquivo': 'cnpj/detalhe-estab-socios.png',  'titulo': 'Detalhe: estabelecimentos e socios'},
+                {'arquivo': 'cnpj/detalhe-endereco.png',      'titulo': 'Detalhe: endereço'},
+                {'arquivo': 'cnpj/detalhe-estab-socios.png',  'titulo': 'Detalhe: estabelecimentos e sócios'},
             ],
             **_status_do_card('cnpj'),
         },
         {
             'id': 'chat_empresas',
             'nome': 'Chat com IA · Empresas (Receita Federal)',
-            'descricao': 'Pergunte em linguagem natural sobre as empresas da RFB. Pipeline com validacao SQL, resposta em texto e graficos.',
+            'descricao': 'Pergunte em linguagem natural sobre as empresas da RFB. Pipeline com validação SQL, resposta em texto e gráficos.',
             'url': urls['chat_emp'],
             'repo': 'https://github.com/antoniorosasse/cnpj_interface',
             'icon': 'bi bi-chat-dots',
             'cor': 'warning',
             'imagem': 'chat-cnpj/chat-1.png',
-            'stack': ['Django 6.1', 'MongoDB 8', 'DeepSeek', 'Chart.js'],
+            'stack': ['Django 6.1', 'DeepSeek', 'pgvector (halfvec 384)', 'MongoDB 8', 'Chart.js'],
             'destaques': [
-                'Pipeline SQL com 4 camadas de validacao',
-                'Historico em MongoDB (Repository pattern)',
-                'Resposta em texto natural + graficos (Chart.js)',
-                'Recusa perguntas fora do schema (RECUSAR:)',
+                'Pipeline SQL com 4 camadas de validação (SELECT-only, sem ;, LIMIT, sem funções perigosas)',
+                'Busca semântica de CNAE com embeddings Braza (sentence-transformers, 384 dims)',
+                'Histórico em MongoDB (Repository pattern) com fallback para Postgres',
+                'Texto natural + gráficos (Chart.js); recusa fora do schema (RECUSAR:)',
             ],
             'galeria': [
-                {'arquivo': 'chat-cnpj/chat-1.png',          'titulo': 'Chat: perguntas, respostas, historico'},
+                {'arquivo': 'chat-cnpj/chat-1.png',          'titulo': 'Chat: perguntas, respostas, histórico'},
                 {'arquivo': 'chat-cnpj/chat-resposta.png',   'titulo': 'Resposta da IA'},
-                {'arquivo': 'chat-cnpj/chat-graficos.png',   'titulo': 'Graficos'},
+                {'arquivo': 'chat-cnpj/chat-graficos.png',   'titulo': 'Gráficos'},
             ],
             **_status_do_card('chat_emp'),
         },
@@ -273,18 +274,18 @@ def _montar_contexto(request):
             'icon': 'bi bi-person-lines-fill',
             'cor': 'success',
             'imagem': 'ibmi-db2/consulta-lista.png',
-            'stack': ['Django 6.0', 'JPype', 'jt400', 'DB2 (IBM i)', 'JDBC'],
+            'stack': ['Django 6.0', 'JPype + jt400', 'JDBC', 'DB2 (IBM i)', 'Cache LocMem'],
             'destaques': [
-                'Conexao JDBC real a um mainframe IBM i (pub400.com)',
-                'CRUD completo com validacao de CPF e CEP',
-                'Cache em memoria (LocMem) e pool de conexoes JDBC',
+                'Conexão JDBC real a um IBM i remoto (pub400.com), sem ORM',
+                'CRUD completo + export CSV, com validação de CPF e de CEP existente na base',
+                'Pool de conexões JDBC reutilizável e cache em memória (LocMem)',
             ],
             'galeria': [
                 {'arquivo': 'ibmi-db2/consulta-filtros.png', 'titulo': 'Filtros de consulta'},
                 {'arquivo': 'ibmi-db2/consulta-lista.png',   'titulo': 'Lista de pessoas'},
                 {'arquivo': 'ibmi-db2/consulta-detalhe.png', 'titulo': 'Detalhe da pessoa'},
-                {'arquivo': 'ibmi-db2/alteracao.png',        'titulo': 'Alteracao'},
-                {'arquivo': 'ibmi-db2/exclusao.png',         'titulo': 'Exclusao'},
+                {'arquivo': 'ibmi-db2/alteracao.png',        'titulo': 'Alteração'},
+                {'arquivo': 'ibmi-db2/exclusao.png',         'titulo': 'Exclusão'},
                 {'arquivo': 'ibmi-db2/api.png',              'titulo': 'API de dados'},
             ],
             **_status_do_card('as400'),
@@ -300,9 +301,9 @@ def _montar_contexto(request):
             'imagem': 'chat-ibmi-db2/chat-1.png',
             'stack': ['Django 6.0', 'OpenAI SDK', 'DeepSeek', 'DB2 (IBM i)', 'JDBC'],
             'destaques': [
-                'Traducao PT-BR -> SQL com contexto da conversa',
-                'Historico persistido (contexto de 10 mensagens)',
-                'Fallback automatico quando o LLM falha',
+                'Tradução PT-BR -> SQL com contexto da conversa',
+                'Contexto (cidade, UF, status) extraído por IA a cada interação',
+                'Histórico em memória por sessão (5 interações) e fallback quando o LLM falha',
             ],
             'galeria': [
                 {'arquivo': 'chat-ibmi-db2/chat-1.png',         'titulo': 'Interface do chat'},
@@ -310,15 +311,149 @@ def _montar_contexto(request):
             ],
             **_status_do_card('chat_pes'),
         },
+        # ============================================================
+        # CARD DA DEMONSTRACAO (o proprio site)
+        # ============================================================
+        # Sem health check de proposito: ele consultaria a si mesmo e
+        # poderia travar um gunicorn de 1 worker. O status e' fixo.
+        {
+            'id': 'menu',
+            'nome': 'Este site · Portfólio arosasse.tech',
+            'descricao': 'A página que você está vendo: hub em Django que reúne os 4 apps, monitora a saúde de cada um e mostra a stack real de cada projeto. É a demonstração ao vivo do portfólio.',
+            'url': 'https://arosasse.tech',
+            'repo': 'https://github.com/antoniorosasse/menu_interface',
+            'icon': 'bi bi-window-stack',
+            'cor': 'secondary',
+            'imagem': None,
+            'demo': True,
+            'stack': ['Django 5.1', 'Bootstrap 5.3', 'Gunicorn + Nginx', 'Health check (deep)', 'Dark mode'],
+            'destaques': [
+                'Demonstração ao vivo: este site é um dos projetos do portfólio',
+                'Consome o /health/deep/ dos 3 apps (cache 60s online / 10s offline)',
+                'Tema claro/escuro persistido em localStorage + prefers-color-scheme',
+                'Cards e página de detalhe em Python puro (sem models, sem fixtures)',
+            ],
+            'galeria': [],
+            'status': '🔵 Demo ao vivo',
+            'status_cor': 'info',
+        },
+    ]
+
+    # ============================================================
+    # FAIXA DE TECNOLOGIAS (nome + onde foi usado de verdade + doc)
+    # ============================================================
+    # Fonte unica: o template so itera sobre esta lista. Cada 'desc' deve
+    # descrever o uso REAL da tecnologia neste sistema, nao a definicao
+    # generica dela (regra em .clinerules/00-projeto.md).
+    tecnologias = [
+        {
+            'nome': 'Django 5.1 a 6.1',
+            'desc': 'Framework dos 4 apps: ORM, templates, admin e middleware. '
+                    'Versões diferentes por app, do 5.1 deste site ao 6.1 da consulta de CNPJ.',
+            'doc': 'https://docs.djangoproject.com/',
+        },
+        {
+            'nome': 'Python 3.13',
+            'desc': 'Linguagem de todos os serviços, com um virtualenv separado por projeto.',
+            'doc': 'https://docs.python.org/3.13/',
+        },
+        {
+            'nome': 'PostgreSQL 15',
+            'desc': 'Banco da base da Receita Federal: 38,5 milhões de estabelecimentos, '
+                    '28 índices e CTEs materializadas para as estatísticas.',
+            'doc': 'https://www.postgresql.org/docs/15/',
+        },
+        {
+            'nome': 'MongoDB 8',
+            'desc': 'Histórico do chat de empresas, acessado por Repository pattern '
+                    '(com fallback para Postgres quando o Mongo não responde).',
+            'doc': 'https://www.mongodb.com/docs/',
+        },
+        {
+            'nome': 'pgvector',
+            'desc': 'Busca semântica de CNAE: coluna halfvec(384) com os vetores dos '
+                    'embeddings e busca por distância de cosseno.',
+            'doc': 'https://github.com/pgvector/pgvector',
+        },
+        {
+            'nome': 'sentence-transformers (Braza)',
+            'desc': 'Modelo de embeddings PT-BR que gera os vetores de 384 dimensões '
+                    'usados na busca de CNAE.',
+            'doc': 'https://sbert.net/',
+        },
+        {
+            'nome': 'DB2 (IBM i)',
+            'desc': 'Tabela PESSOAS com cerca de 500 mil linhas em um IBM i remoto '
+                    '(pub400.com): consulta paginada por keyset e CRUD completo.',
+            'doc': 'https://www.ibm.com/docs/en/i',
+        },
+        {
+            'nome': 'JPype / JDBC',
+            'desc': 'Ponte Python <-> JVM para falar JDBC com o DB2 a partir do Django, '
+                    'sem ORM e com pool de conexões.',
+            'doc': 'https://jpype.readthedocs.io/',
+        },
+        {
+            'nome': 'DeepSeek',
+            'desc': 'LLM que traduz a pergunta em PT-BR para SQL nos dois chats '
+                    '(empresas e pessoas) e recusa pedidos fora do schema.',
+            'doc': 'https://api-docs.deepseek.com/',
+        },
+        {
+            'nome': 'OpenAI SDK',
+            'desc': 'Cliente HTTP usado para chamar a API compatível do DeepSeek e '
+                    'extrair o contexto da conversa.',
+            'doc': 'https://platform.openai.com/docs',
+        },
+        {
+            'nome': 'Chart.js',
+            'desc': 'Gráficos montados a partir do resultado da query no chat de '
+                    'empresas (o LLM escolhe o tipo de gráfico).',
+            'doc': 'https://www.chartjs.org/docs/',
+        },
+        {
+            'nome': 'Bootstrap 5.3',
+            'desc': 'Layout e componentes do site, mais o tema claro/escuro por '
+                    'variáveis CSS com persistência em localStorage.',
+            'doc': 'https://getbootstrap.com/docs/5.3/',
+        },
+        {
+            'nome': 'pandas / pyarrow',
+            'desc': 'ETL: leitura dos Parquet da Receita Federal e carga no Postgres, '
+                    'no Mongo e no DB2.',
+            'doc': 'https://pandas.pydata.org/docs/',
+        },
+        {
+            'nome': 'Gunicorn',
+            'desc': 'WSGI em produção, 1 worker por serviço, gerenciado pelo systemd.',
+            'doc': 'https://docs.gunicorn.org/',
+        },
+        {
+            'nome': 'Nginx',
+            'desc': 'Reverse proxy dos subdomínios, terminação TLS e entrega dos '
+                    'arquivos estáticos.',
+            'doc': 'https://nginx.org/en/docs/',
+        },
+        {
+            'nome': "Let's Encrypt",
+            'desc': 'Certificados TLS dos subdomínios, com renovação automática.',
+            'doc': 'https://letsencrypt.org/docs/',
+        },
+        {
+            'nome': 'Git / GitHub',
+            'desc': '4 repositórios públicos com histórico de commits e README '
+                    'explicando cada projeto.',
+            'doc': 'https://github.com/antoniorosasse',
+        },
     ]
 
     return {
         'projetos': projetos,
+        'tecnologias': tecnologias,
         'repos_sem_card': [
-            {'nome': 'menu_interface', 'descricao': 'Menu principal (este projeto)', 'url': 'https://github.com/antoniorosasse/menu_interface'},
-            {'nome': 'ProjetoCargaDados', 'descricao': 'Carga dos dados da Receita Federal (ETL)', 'url': 'https://github.com/antoniorosasse/ProjetoCargaDados'},
+            {'nome': 'ProjetoCargaDados', 'descricao': 'ETL em linha de comando: Parquet da Receita Federal -> Postgres/Mongo, e PESSOAS no DB2', 'url': 'https://github.com/antoniorosasse/ProjetoCargaDados'},
         ],
-        'versao': '1.2',
+        'versao': '1.3',
         'ambiente': ambiente_nome,
         'ambiente_cor': ambiente_cor,
         'is_local': is_local,

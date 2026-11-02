@@ -19,8 +19,11 @@ algo mudar, atualize o `PROJETOS.md`.
 ## Idioma e estilo
 
 - Responda sempre em **portugues do Brasil (pt-BR)**.
-- Codigo, comentarios e docstrings: **sem acentos** (ex: `versao`, `nao`,
-  `conexao`). Prosa em Markdown (.md) pode usar acentos normalmente.
+- Texto exibido ao usuario (titulos, `nome`, `descricao`, `destaques`, `tecnologias`,
+  rotulos, mensagens): **com acentos** — inclusive dentro do `views.py`
+  (ex.: `'Consulta de CNPJ sobre a base pública'`).
+- Codigo (identificadores, chaves de dict, slugs, ids, nomes de arquivo/tabela,
+  comentarios e docstrings): **sem acentos** (ex: `versao`, `nao`, `conexao`).
 - Comentarios e docstrings em PT-BR. Nao traduza nomes de tabelas/colunas da
   RFB nem nomes de projeto (`menu_interface`, `chat_pessoas`).
 - Siga o estilo dos arquivos vizinhos (4 espacos, aspas simples).
@@ -35,9 +38,10 @@ algo mudar, atualize o `PROJETOS.md`.
 - **Nao ha banco de negocio, Postgres, Mongo nem Redis.** Cache e
   `LocMemCache` (`menu-health-cache`, `TIMEOUT=300`).
 - `core/views.py` mantem a lista de projetos em Python puro (`_montar_contexto`),
-  sem models e sem fixtures. 4 cards: `cnpj`, `chat_empresas`, `as400`,
-  `chat_pessoas`; mais `repos_sem_card` (`menu_interface`, `ProjetoCargaDados`).
-  Versao exibida: `1.2`.
+  sem models e sem fixtures. 5 cards: `cnpj`, `chat_empresas`, `as400`,
+  `chat_pessoas` e `menu` (este site, como **demonstracao ao vivo**, com
+  `demo: True`, `imagem: None` e status fixo "Demo ao vivo"); mais
+  `repos_sem_card` (so `ProjetoCargaDados`). Versao exibida: `1.3`.
 - Rotas (`core/urls.py`): `''` (`core:menu`), `projeto/<str:projeto_id>/`
   (`core:detalhe_projeto`, HTTP 404 se o id nao existe), `health/` (texto `ok`)
   e `admin/`.
@@ -67,13 +71,25 @@ algo mudar, atualize o `PROJETOS.md`.
 
 ## Convencoes de implementacao
 
-- **Card = codigo real do outro projeto**: ao corrigir versao/tecnologia, ajustar
-  os tres lugares na mesma tarefa — `_montar_contexto` (`core/views.py`), a faixa
-  de tecnologias em `core/templates/core/menu.html` e o `docs/PROJETOS.md`
-  (secao 7.2 + 3 linhas na secao 2).
+- **Card = codigo real do outro projeto**: ao corrigir versao/tecnologia, ajustar os
+  **dois** lugares na mesma tarefa — `_montar_contexto` (`core/views.py`: `projetos`
+  alimenta os cards e `tecnologias` alimenta a faixa) e o `docs/PROJETOS.md`
+  (secao 7.2 + 3 linhas na secao 2). O `menu.html` so itera sobre `tecnologias`;
+  nao existe mais lista de badges hardcoded no template.
+- **Descricao de tecnologia = uso real**: cada item de `tecnologias` tem `nome`,
+  `desc` e `doc` (link oficial). O `desc` diz **onde** a tecnologia e usada neste
+  sistema (ex.: pgvector -> `halfvec(384)` na busca semantica de CNAE; JPype/JDBC ->
+  Python<->JVM para falar com o DB2 sem ORM), nunca a definicao generica dela.
+- **Nunca citar Docker/container**: nenhum dos 4 projetos tem `Dockerfile`
+  (deploy e' gunicorn + systemd + nginx). O que existe de verdade: `pgvector`,
+  `sentence-transformers` (Braza), `pandas`/`pyarrow`, JPype/JDBC, Chart.js.
+- **Card `menu` fica sem health check**: um GET em `/health/deep/` do proprio
+  host pode travar o `gunicorn` de 1 worker. Status e' fixo (`status_cor: info`).
 - Links externos abrem em **nova aba** (`target="_blank"` com `rel="noopener"`);
-  icones vem de biblioteca, nao de emoji.
+  icones vem de biblioteca, nao de emoji (a badge de status 🟢/🟡/🔴 e' a unica
+  excecao e ja existia).
 - Nao adicionar dependencia nova nem logica de banco: o menu so linka e monitora.
 - Prefira editar arquivos existentes em vez de criar modulos novos.
-- Antes de finalizar: `python manage.py check` e abrir a home (4 cards) e a
+- Antes de finalizar: `python manage.py check` e abrir a home (5 cards) e a
   pagina de detalhe; relate o resultado.
+

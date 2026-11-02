@@ -62,6 +62,24 @@
             color: var(--text-muted);
             font-size: 1.15rem;
         }
+        .hero-demo-note {
+            display: inline-block;
+            max-width: 820px;
+            margin-top: 0.25rem;
+            padding: 0.75rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-left: 3px solid #10b981;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.55;
+            box-shadow: var(--card-shadow);
+            text-align: left;
+        }
+        .hero-demo-note strong {
+            color: var(--header-text);
+        }
 
         /* ============================================================
            CARDS
@@ -102,6 +120,17 @@
             inset: 0;
             background: linear-gradient(180deg, transparent 60%, rgba(15, 23, 42, 0.55) 100%);
             pointer-events: none;
+        }
+        /* Fallback para card sem screenshot (ex: o proprio site) */
+        .card-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981 0%, #0f766e 55%, #0f172a 100%);
+            color: #ffffff;
+            font-size: 3.6rem;
         }
         .card-body-custom {
             padding: 1.1rem 1.2rem 1.25rem;
@@ -221,14 +250,58 @@
             color: var(--text);
             font-size: 0.8rem;
             font-weight: 600;
+            font-family: inherit;
             padding: 0.4rem 0.85rem;
             border-radius: 999px;
+            cursor: help;
             transition: all 0.2s ease;
         }
-        .tech-badge:hover {
+        .tech-badge:hover,
+        .tech-badge:focus-visible,
+        .tech-badge.ativo {
             border-color: #10b981;
             color: #10b981;
             transform: translateY(-2px);
+        }
+        .tech-badge:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Painel de detalhe: sempre no mesmo lugar, com altura minima
+           para o texto mudar sem empurrar o resto da pagina. */
+        .tech-detail {
+            max-width: 760px;
+            min-height: 3.2rem;
+            margin: 1rem auto 0;
+            padding: 0.7rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-left: 3px solid var(--card-border);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            text-align: left;
+            transition: border-left-color 0.2s ease, color 0.2s ease;
+        }
+        .tech-detail.detalhe-ativo {
+            border-left-color: #10b981;
+            color: var(--text);
+        }
+        .tech-detail strong {
+            color: var(--header-text);
+        }
+        .tech-detail a {
+            color: #10b981;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .tech-detail a:hover {
+            text-decoration: underline;
+        }
+        .tech-detail-hint {
+            font-style: italic;
         }
 
         /* ============================================================
@@ -304,9 +377,20 @@
                 <h1 class="display-4 fw-bold mb-2 hero-title">
                     Sistema Integrado
                 </h1>
-                <p class="hero-subtitle mb-3">
-                    Full-stack · Django · Postgres · MongoDB · IA · Dados públicos
+                <p class="hero-subtitle mb-4">
+                    Portfólio full-stack · Django · Postgres · MongoDB · IA · Dados públicos
                 </p>
+
+                <!-- Demonstração ao vivo -->
+                <div class="hero-demo-note mb-4">
+                    <i class="bi bi-broadcast me-1 text-success"></i>
+                    <strong>Demonstração ao vivo:</strong>
+                    este site (arosasse.tech) é o próprio portfólio — as 4 aplicações abaixo
+                    estão em produção e o status de cada uma é verificado em tempo real.
+                    Clique em <em>Acessar</em> (ou <em>Ver em produção</em>, no card deste site)
+                    para abrir a aplicação real e no <i class="bi bi-info-circle"></i> para ver
+                    a stack, os destaques técnicos e as telas de cada projeto.
+                </div>
 
                 <!-- Badge do Ambiente -->
                 <span class="badge bg-{{ ambiente_cor }} ambiente-badge mb-4">
@@ -334,10 +418,16 @@
                 <div class="card card-hover h-100">
                     <!-- Imagem de capa -->
                     <div class="card-image-wrapper">
+                        {% if projeto.imagem %}
                         <img src="{% static projeto.imagem %}"
                              alt="{{ projeto.nome }}"
                              loading="lazy"
                              onerror="this.style.display='none'">
+                        {% else %}
+                        <div class="card-image-placeholder">
+                            <i class="{{ projeto.icon }}"></i>
+                        </div>
+                        {% endif %}
                         <div class="card-image-overlay"></div>
                         <span class="badge bg-{{ projeto.status_cor }} status-badge-custom"
                               title="{{ projeto.status }}">
@@ -372,7 +462,8 @@
                                class="btn btn-success btn-acessar flex-fill"
                                target="_blank"
                                rel="noopener">
-                                Acessar <i class="bi bi-arrow-right ms-1"></i>
+                                {% if projeto.demo %}Ver em produção{% else %}Acessar{% endif %}
+                                <i class="bi bi-arrow-right ms-1"></i>
                             </a>
                             <a href="{{ projeto.repo }}"
                                class="btn btn-outline-secondary btn-acessar"
@@ -414,24 +505,19 @@
 
         <!-- Faixa de tecnologias -->
         <div class="tech-strip">
-            <div class="tech-strip-title">Tecnologias usadas no projeto</div>
-            <div class="tech-badges">
-                <span class="tech-badge">Django 5.1 a 6.1</span>
-                <span class="tech-badge">Python 3.13</span>
-                <span class="tech-badge">PostgreSQL 15</span>
-                <span class="tech-badge">MongoDB 8</span>
-                <span class="tech-badge">pgvector</span>
-                <span class="tech-badge">DB2 (IBM i)</span>
-                <span class="tech-badge">DeepSeek</span>
-                <span class="tech-badge">OpenAI SDK</span>
-                <span class="tech-badge">Chart.js</span>
-                <span class="tech-badge">Bootstrap 5.3</span>
-                <span class="tech-badge">JPype / JDBC</span>
-                <span class="tech-badge">Docker</span>
-                <span class="tech-badge">Gunicorn</span>
-                <span class="tech-badge">Nginx</span>
-                <span class="tech-badge">Let's Encrypt</span>
-                <span class="tech-badge">Git / GitHub</span>
+            <div class="tech-strip-title">Tecnologias usadas nos projetos</div>
+            <div class="tech-badges" id="techBadges">
+                {% for tech in tecnologias %}
+                <button type="button"
+                        class="tech-badge"
+                        data-desc="{{ tech.desc }}"
+                        data-doc="{{ tech.doc }}">{{ tech.nome }}</button>
+                {% endfor %}
+            </div>
+            <div class="tech-detail" id="techDetail" role="status" aria-live="polite">
+                <span class="tech-detail-hint">
+                    Passe o mouse ou toque em uma tecnologia para ver onde ela é usada neste sistema.
+                </span>
             </div>
         </div>
 
@@ -491,6 +577,111 @@
                 const novo = atual === 'dark' ? 'light' : 'dark';
                 aplicarTema(novo);
                 localStorage.setItem(STORAGE_KEY, novo);
+            });
+        })();
+    </script>
+    <script>
+        (function () {
+            'use strict';
+
+            // ========================================================
+            // FAIXA DE TECNOLOGIAS: painel de detalhe
+            // ========================================================
+            // Hover = desktop, foco = teclado, clique/toque = fixa o
+            // painel (no celular nao existe hover). O texto vem dos
+            // data-* renderizados a partir de views.py.
+            const lista = document.getElementById('techBadges');
+            const painel = document.getElementById('techDetail');
+            if (!lista || !painel) return;
+
+            // Dica inicial: reaproveita o texto ja renderizado pelo template
+            const DICA = painel.textContent.trim().replace(/\s+/g, ' ');
+            let fixado = null;
+
+            function dicaInicial() {
+                const span = document.createElement('span');
+                span.className = 'tech-detail-hint';
+                span.textContent = DICA;
+                return span;
+            }
+
+            function marcar(botao) {
+                lista.querySelectorAll('.tech-badge.ativo').forEach(function (b) {
+                    b.classList.remove('ativo');
+                });
+                if (botao) botao.classList.add('ativo');
+            }
+
+            function mostrar(botao) {
+                const titulo = document.createElement('strong');
+                titulo.textContent = botao.textContent.trim();
+
+                const partes = [titulo, document.createTextNode(' — ' + (botao.dataset.desc || ''))];
+
+                if (botao.dataset.doc) {
+                    const link = document.createElement('a');
+                    link.href = botao.dataset.doc;
+                    link.target = '_blank';
+                    link.rel = 'noopener';
+                    link.className = 'ms-1';
+                    link.textContent = 'documentação ↗';
+                    partes.push(link);
+                }
+
+                painel.replaceChildren(...partes);
+                painel.classList.add('detalhe-ativo');
+                marcar(botao);
+            }
+
+            function limpar() {
+                if (fixado) return;   // painel fixado por clique/toque
+                painel.replaceChildren(dicaInicial());
+                painel.classList.remove('detalhe-ativo');
+                marcar(null);
+            }
+
+            function botaoDe(evento) {
+                return evento.target.closest('.tech-badge');
+            }
+
+            // Hover e foco mostram; ao sair, volta a dica
+            lista.addEventListener('mouseover', function (e) {
+                const botao = botaoDe(e);
+                if (botao) mostrar(botao);
+            });
+            lista.addEventListener('mouseout', function (e) {
+                if (botaoDe(e)) limpar();
+            });
+            lista.addEventListener('focusin', function (e) {
+                const botao = botaoDe(e);
+                if (botao) mostrar(botao);
+            });
+            lista.addEventListener('focusout', limpar);
+
+            // Clique/toque fixa (2o clique no mesmo badge solta)
+            lista.addEventListener('click', function (e) {
+                const botao = botaoDe(e);
+                if (!botao) return;
+                if (fixado === botao) {
+                    fixado = null;
+                    limpar();
+                    return;
+                }
+                fixado = botao;
+                mostrar(botao);
+            });
+
+            // Clique fora ou Esc soltam o painel fixado
+            document.addEventListener('click', function (e) {
+                if (!fixado || e.target.closest('#techBadges')) return;
+                fixado = null;
+                limpar();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && fixado) {
+                    fixado = null;
+                    limpar();
+                }
             });
         })();
     </script>

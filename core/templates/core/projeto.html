@@ -262,7 +262,8 @@
                        class="btn btn-success btn-acessar-grande"
                        target="_blank"
                        rel="noopener">
-                        Acessar aplicação <i class="bi bi-box-arrow-up-right ms-1"></i>
+                        {% if projeto.demo %}Ver em produção{% else %}Acessar aplicação{% endif %}
+                        <i class="bi bi-box-arrow-up-right ms-1"></i>
                     </a>
                     <a href="{{ projeto.repo }}"
                        class="btn btn-outline-secondary btn-acessar-grande"
@@ -301,6 +302,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- Nota apenas do card de demonstracao (o proprio site) -->
+        {% if projeto.demo %}
+        <div class="card-section">
+            <h5 class="mb-3">
+                <i class="bi bi-broadcast text-{{ projeto.cor }}"></i> O que observar nesta demonstração
+            </h5>
+            <ul class="destaques-list">
+                <li>
+                    As 4 aplicações do portfólio estão <strong>em produção</strong>, com banco
+                    de verdade: 38,5 milhões de CNPJs no PostgreSQL e 500 mil pessoas no
+                    DB2 de um IBM i.
+                </li>
+                <li>
+                    O selo de status de cada card vem de um health check que testa o banco do
+                    app (não é estático): <strong>No ar</strong> / <strong>Lento</strong> /
+                    <strong>Fora</strong>.
+                </li>
+                <li>
+                    Cada card abre a aplicação real e tem uma página de detalhe com a stack
+                    exata, os destaques técnicos e as telas.
+                </li>
+                <li>
+                    Tema claro/escuro sem framework de CSS: variáveis CSS +
+                    <code>localStorage</code> + <code>prefers-color-scheme</code>.
+                </li>
+            </ul>
+        </div>
+        {% endif %}
 
         <!-- Galeria -->
         {% if projeto.galeria %}

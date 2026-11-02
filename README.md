@@ -1,8 +1,9 @@
 # Menu Interface
 
-Pagina inicial do Sistema Integrado (arosasse.tech). Mostra 4 cards com os
-modulos do sistema, faz health check em tempo real de cada um, e tem uma
-pagina de detalhe por projeto (com galeria de telas).
+Pagina inicial do Sistema Integrado (arosasse.tech). Mostra 5 cards — os 4
+modulos do sistema e este proprio site como **demonstracao ao vivo** do
+portfolio —, faz health check em tempo real dos outros apps e tem uma pagina
+de detalhe por projeto (com galeria de telas).
 
 ## Stack
 
@@ -48,19 +49,33 @@ Acessa em http://localhost:8000/
 
 | Metodo | URL | O que faz |
 |---|---|---|
-| GET | `/` | Pagina do menu (4 cards + faixa de tecnologias) |
+| GET | `/` | Pagina do menu (5 cards + faixa de tecnologias) |
 | GET | `/projeto/<id>/` | Pagina de detalhe de um projeto (galeria) |
 | GET | `/health/` | Health check leve (responde `ok`) |
 
 ## Funcionalidades da home
 
-- **4 cards de projeto** com imagem de capa, badges de stack, lista de
+- **5 cards**: os 4 projetos do sistema (`cnpj`, `chat_empresas`, `as400`,
+  `chat_pessoas`) + o card `menu`, que apresenta este site como
+  **demonstracao ao vivo** do portfolio (sem health check: ele mostraria a si
+  mesmo; status fixo "Demo ao vivo", imagem de capa gerada por CSS e botao
+  "Ver em producao"). Cada card tem imagem de capa, badges de stack, lista de
   destaques tecnicos e botao de acesso.
 - **Badge de status dinamico por card** (🟢 No ar / 🟡 Lento / 🔴 Fora),
   atualizado por health check (ver secao abaixo).
 - **Botao "Detalhes"** em cada card, que abre a pagina `/projeto/<id>/`
   com a galeria completa de telas daquele projeto.
-- **Faixa de tecnologias** no rodape (pílulas).
+- **Faixa de tecnologias interativa** no rodape (17 pílulas): Django 5.1 a 6.1,
+  Python 3.13, PostgreSQL 15, MongoDB 8, pgvector, sentence-transformers (Braza),
+  DB2 (IBM i), JPype/JDBC, DeepSeek, OpenAI SDK, Chart.js, Bootstrap 5.3,
+  pandas/pyarrow, Gunicorn, Nginx, Let's Encrypt, Git/GitHub. Cada pílula e um
+  `<button>` que abre, no painel logo abaixo da faixa, o uso **real** da tecnologia
+  neste sistema + link para a documentacao oficial. Funciona por hover (desktop),
+  foco (teclado) e clique/toque (celular, que fixa o painel; `Esc` ou clique fora
+  solta). Textos e links vivem em `_montar_contexto` (lista `tecnologias`) — o
+  template so itera. **Nao citar Docker** (nenhum dos projetos usa container).
+- **Texto exibido** (cards, faixa, titulos) e escrito com acentos; comentarios,
+  identificadores e nomes de tabela seguem sem acento (ver `.clinerules`).
 - **Dark mode** (tema claro/escuro) com:
   - Botao flutuante (canto superior direito).
   - Persistencia em `localStorage` (`menu-theme`).
