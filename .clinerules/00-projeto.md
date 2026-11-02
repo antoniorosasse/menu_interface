@@ -41,7 +41,7 @@ algo mudar, atualize o `PROJETOS.md`.
   sem models e sem fixtures. 5 cards: `cnpj`, `chat_empresas`, `as400`,
   `chat_pessoas` e `menu` (este site, como **demonstracao ao vivo**, com
   `demo: True`, `imagem: None` e status fixo "Demo ao vivo"); mais
-  `repos_sem_card` (so `ProjetoCargaDados`). Versao exibida: `1.3`.
+  `repos_sem_card` (so `ProjetoCargaDados`). Versao exibida: `1.4`.
 - Rotas (`core/urls.py`): `''` (`core:menu`), `projeto/<str:projeto_id>/`
   (`core:detalhe_projeto`, HTTP 404 se o id nao existe), `health/` (texto `ok`)
   e `admin/`.

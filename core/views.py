@@ -454,7 +454,7 @@ def _montar_contexto(request):
         'repos_sem_card': [
             {'nome': 'ProjetoCargaDados', 'descricao': 'ETL em linha de comando: Parquet da Receita Federal -> Postgres/Mongo, e PESSOAS no DB2', 'url': 'https://github.com/antoniorosasse/ProjetoCargaDados'},
         ],
-        'versao': '1.3',
+        'versao': '1.4',
         'ambiente': ambiente_nome,
         'ambiente_cor': ambiente_cor,
         'is_local': is_local,
