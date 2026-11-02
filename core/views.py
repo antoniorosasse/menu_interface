@@ -245,16 +245,16 @@ def _montar_contexto(request):
         {
             'id': 'chat_empresas',
             'nome': 'Chat com IA · Empresas (Receita Federal)',
-            'descricao': 'Pergunte em linguagem natural sobre as empresas da RFB. Pipeline com validação SQL, resposta em texto e gráficos.',
+            'descricao': 'Pergunte em linguagem natural sobre as empresas da RFB. Pipeline RAG (recuperação vetorial + SQL) com validação em 4 camadas e resposta ancorada nos dados.',
             'url': urls['chat_emp'],
             'repo': 'https://github.com/antoniorosasse/cnpj_interface',
             'icon': 'bi bi-chat-dots',
             'cor': 'warning',
             'imagem': 'chat-cnpj/chat-1.png',
-            'stack': ['Django 6.1', 'DeepSeek', 'pgvector (halfvec 384)', 'MongoDB 8', 'Chart.js'],
+            'stack': ['Django 6.1', 'RAG (pgvector + SQL)', 'DeepSeek', 'MongoDB 8', 'Chart.js'],
             'destaques': [
                 'Pipeline SQL com 4 camadas de validação (SELECT-only, sem ;, LIMIT, sem funções perigosas)',
-                'Busca semântica de CNAE com embeddings Braza (sentence-transformers, 384 dims)',
+                'RAG: busca vetorial de CNAE (embeddings Braza, 384 dims) + linhas recuperadas como contexto do LLM',
                 'Histórico em MongoDB (Repository pattern) com fallback para Postgres',
                 'Texto natural + gráficos (Chart.js); recusa fora do schema (RECUSAR:)',
             ],
@@ -372,7 +372,8 @@ def _montar_contexto(request):
         {
             'nome': 'pgvector',
             'desc': 'Busca semântica de CNAE: coluna halfvec(384) com os vetores dos '
-                    'embeddings e busca por distância de cosseno.',
+                    'embeddings e busca por distância de cosseno — é a etapa de '
+                    'recuperação do RAG do chat de empresas.',
             'doc': 'https://github.com/pgvector/pgvector',
         },
         {
@@ -395,8 +396,8 @@ def _montar_contexto(request):
         },
         {
             'nome': 'DeepSeek',
-            'desc': 'LLM que traduz a pergunta em PT-BR para SQL nos dois chats '
-                    '(empresas e pessoas) e recusa pedidos fora do schema.',
+            'desc': 'LLM que traduz a pergunta em PT-BR para SQL e redige a resposta '
+                    'ancorada apenas nas linhas recuperadas (RAG), nos dois chats.',
             'doc': 'https://api-docs.deepseek.com/',
         },
         {
