@@ -1,16 +1,16 @@
 # Menu Interface
 
-Pagina inicial do Sistema Integrado (arosasse.tech). Mostra 5 cards — os 4
-modulos do sistema e este proprio site como **demonstracao ao vivo** do
-portfolio —, faz health check em tempo real dos outros apps e tem uma pagina
+Página inicial do Sistema Integrado (arosasse.tech). Mostra 5 cards — os 4
+módulos do sistema e este próprio site como **demonstração ao vivo** do
+portfólio —, faz health check em tempo real dos outros apps e tem uma página
 de detalhe por projeto (com galeria de telas).
 
 ## Stack
 
 - Django 5.1.7
 - Python 3.13
-- Gunicorn + systemd (producao)
-- SQLite (sessoes e admin)
+- Gunicorn + systemd (produção)
+- SQLite (sessões e admin)
 - Bootstrap 5.3 (via CDN)
 
 ## Estrutura
@@ -47,68 +47,68 @@ Acessa em http://localhost:8000/
 
 ## Endpoints
 
-| Metodo | URL | O que faz |
+| Método | URL | O que faz |
 |---|---|---|
-| GET | `/` | Pagina do menu (5 cards + faixa de tecnologias) |
-| GET | `/projeto/<id>/` | Pagina de detalhe de um projeto (galeria) |
+| GET | `/` | Página do menu (5 cards + faixa de tecnologias) |
+| GET | `/projeto/<id>/` | Página de detalhe de um projeto (galeria) |
 | GET | `/health/` | Health check leve (responde `ok`) |
 
 ## Funcionalidades da home
 
 - **5 cards**: os 4 projetos do sistema (`cnpj`, `chat_empresas`, `as400`,
   `chat_pessoas`) + o card `menu`, que apresenta este site como
-  **demonstracao ao vivo** do portfolio (sem health check: ele mostraria a si
-  mesmo; status fixo "Demo ao vivo", imagem de capa gerada por CSS e botao
-  "Ver em producao"). Cada card tem imagem de capa, badges de stack, lista de
-  destaques tecnicos e botao de acesso.
-- **Badge de status dinamico por card** (🟢 No ar / 🟡 Lento / 🔴 Fora),
-  atualizado por health check (ver secao abaixo).
-- **Botao "Detalhes"** em cada card, que abre a pagina `/projeto/<id>/`
+  **demonstração ao vivo** do portfólio (sem health check: ele mostraria a si
+  mesmo; status fixo "Demo ao vivo", imagem de capa gerada por CSS e botão
+  "Ver em produção"). Cada card tem imagem de capa, badges de stack, lista de
+  destaques técnicos e botão de acesso.
+- **Badge de status dinâmico por card** (🟢 No ar / 🟡 Lento / 🔴 Fora),
+  atualizado por health check (ver seção abaixo).
+- **Botão "Detalhes"** em cada card, que abre a página `/projeto/<id>/`
   com a galeria completa de telas daquele projeto.
-- **Faixa de tecnologias interativa** no rodape (17 pílulas): Django 5.1 a 6.1,
+- **Faixa de tecnologias interativa** no rodapé (17 pílulas): Django 5.1 a 6.1,
   Python 3.13, PostgreSQL 15, MongoDB 8, pgvector, sentence-transformers (Braza),
   DB2 (IBM i), JPype/JDBC, DeepSeek, OpenAI SDK, Chart.js, Bootstrap 5.3,
-  pandas/pyarrow, Gunicorn, Nginx, Let's Encrypt, Git/GitHub. Cada pílula e um
+  pandas/pyarrow, Gunicorn, Nginx, Let's Encrypt, Git/GitHub. Cada pílula é um
   `<button>` que abre, no painel logo abaixo da faixa, o uso **real** da tecnologia
-  neste sistema + link para a documentacao oficial. Funciona por hover (desktop),
+  neste sistema + link para a documentação oficial. Funciona por hover (desktop),
   foco (teclado) e clique/toque (celular, que fixa o painel; `Esc` ou clique fora
   solta). Textos e links vivem em `_montar_contexto` (lista `tecnologias`) — o
-  template so itera. **Nao citar Docker** (nenhum dos projetos usa container).
-- **Bloco "Outros repositorios"**: abaixo dos cards, a lista
-  `repos_sem_card` (em `_montar_contexto`) mostra os repositorios que **nao**
-  tem card — hoje so o **ProjetoCargaDados**, com a descricao no `title` do
-  botao.
-- **Rodape**: mostra `Versao {{ versao }}` (hoje `1.4`), o host atual e o badge
-  de ambiente. A versao tambem vem de `_montar_contexto`.
-- **Fonte dos cards**: alem das tecnologias, os textos, URLs, stacks, destaques
+  template só itera. **Não citar Docker** (nenhum dos projetos usa container).
+- **Bloco "Outros repositórios"**: abaixo dos cards, a lista
+  `repos_sem_card` (em `_montar_contexto`) mostra os repositórios que **não**
+  têm card — hoje só o **ProjetoCargaDados**, com a descrição no `title` do
+  botão.
+- **Rodapé**: mostra `Versao {{ versao }}` (hoje `1.4`), o host atual e o badge
+  de ambiente. A versão também vem de `_montar_contexto`.
+- **Fonte dos cards**: além das tecnologias, os textos, URLs, stacks, destaques
   e galerias de cada card vivem na lista `projetos` de `_montar_contexto` — o
-  template so itera. Health check e imagem de capa tambem saem de la.
-- **Texto exibido** (cards, faixa, titulos) e escrito com acentos; comentarios,
+  template só itera. Health check e imagem de capa também saem de lá.
+- **Texto exibido** (cards, faixa, títulos) é escrito com acentos; comentários,
   identificadores e nomes de tabela seguem sem acento (ver `.clinerules`).
 - **Dark mode** (tema claro/escuro) com:
-  - Botao flutuante (canto superior direito).
-  - Persistencia em `localStorage` (`menu-theme`).
-  - Deteccao de preferencia do SO (`prefers-color-scheme`) no primeiro acesso.
+  - Botão flutuante (canto superior direito).
+  - Persistência em `localStorage` (`menu-theme`).
+  - Detecção de preferência do SO (`prefers-color-scheme`) no primeiro acesso.
 
-## Health check dos servicos
+## Health check dos serviços
 
 Cada card consulta o endpoint **`/health/deep/`** do seu respectivo app
-(note: **nao** e' `/health/`, e' o `/health/deep/`). O endpoint devolve
+(note: **não** é `/health/`, e sim o `/health/deep/`). O endpoint devolve
 um JSON com `status: "ok" | "error"`. O menu considera:
 
-- **🟢 No ar** — `status: "ok"` e resposta em ate **4s**.
+- **🟢 No ar** — `status: "ok"` e resposta em até **4s**.
 - **🟡 Lento** — `status: "ok"` mas resposta entre 4s e 5s.
-- **🔴 Fora** — `status: "error"`, timeout (5s), HTTP != 200, ou JSON invalido.
+- **🔴 Fora** — `status: "error"`, timeout (5s), HTTP != 200, ou JSON inválido.
 
 **Cache:** o resultado fica em cache (`LocMemCache`) por:
 
-- **60 segundos** quando o resultado e' `online` ou `lento`.
-- **10 segundos** quando e' `offline` — pra recuperar rapido se o backend
+- **60 segundos** quando o resultado é `online` ou `lento`.
+- **10 segundos** quando é `offline` — pra recuperar rápido se o backend
   estava apenas subindo ou teve um blip.
 
 **URLs consultadas** (por ambiente):
 
-Em local (`DEBUG=True`), o menu assume que os apps estao na mesma maquina,
+Em local (`DEBUG=True`), o menu assume que os apps estão na mesma máquina,
 em portas diferentes:
 
 - IBM i · DB2 · Pessoas: `http://<host>:8001/health/deep/`
@@ -116,36 +116,36 @@ em portas diferentes:
 - Consulta Empresas: `http://<host>:8002/health/deep/`
 - Chat IA · Empresas: `http://<host>:8002/chat/health/deep/`
 
-Em producao:
+Em produção:
 
 - IBM i · DB2 · Pessoas: `https://as400.arosasse.tech/health/deep/`
 - Chat IA · Pessoas: `https://as400.arosasse.tech/health/deep/`
 - Consulta Empresas: `https://cnpj.arosasse.tech/health/deep/`
 - Chat IA · Empresas: `https://chat.arosasse.tech/chat/health/deep/`
 
-**Nota:** o timeout por chamada e' `HEALTH_TIMEOUT = 5` segundos (hardcoded
+**Nota:** o timeout por chamada é `HEALTH_TIMEOUT = 5` segundos (hardcoded
 em `core/views.py`).
 
 ## Deploy
 
-Na maquina NoteNeto:
+Na máquina NoteNeto:
 
     ./deploy.sh menu
 
 ## Ambiente
 
 - **Local:** http://localhost:8000
-- **Producao:** https://arosasse.tech
+- **Produção:** https://arosasse.tech
 
-## Variaveis de ambiente
+## Variáveis de ambiente
 
-Ver `.env.example`. Sao 3:
+Ver `.env.example`. São 3:
 
-- `SECRET_KEY` — chave do Django (obrigatorio)
+- `SECRET_KEY` — chave do Django (obrigatório)
 - `DEBUG` — `True` ou `False`
-- `ALLOWED_HOSTS` — lista separada por virgula
+- `ALLOWED_HOSTS` — lista separada por vírgula
 
-## Repositorios relacionados
+## Repositórios relacionados
 
 - [as400_interface](https://github.com/antoniorosasse/as400_interface)
 - [cnpj_interface](https://github.com/antoniorosasse/cnpj_interface)
