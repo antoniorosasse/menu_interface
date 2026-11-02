@@ -74,6 +74,15 @@ Acessa em http://localhost:8000/
   foco (teclado) e clique/toque (celular, que fixa o painel; `Esc` ou clique fora
   solta). Textos e links vivem em `_montar_contexto` (lista `tecnologias`) — o
   template so itera. **Nao citar Docker** (nenhum dos projetos usa container).
+- **Bloco "Outros repositorios"**: abaixo dos cards, a lista
+  `repos_sem_card` (em `_montar_contexto`) mostra os repositorios que **nao**
+  tem card — hoje so o **ProjetoCargaDados**, com a descricao no `title` do
+  botao.
+- **Rodape**: mostra `Versao {{ versao }}` (hoje `1.4`), o host atual e o badge
+  de ambiente. A versao tambem vem de `_montar_contexto`.
+- **Fonte dos cards**: alem das tecnologias, os textos, URLs, stacks, destaques
+  e galerias de cada card vivem na lista `projetos` de `_montar_contexto` — o
+  template so itera. Health check e imagem de capa tambem saem de la.
 - **Texto exibido** (cards, faixa, titulos) e escrito com acentos; comentarios,
   identificadores e nomes de tabela seguem sem acento (ver `.clinerules`).
 - **Dark mode** (tema claro/escuro) com:
