@@ -5,6 +5,19 @@ módulos do sistema e este próprio site como **demonstração ao vivo** do
 portfólio —, faz health check em tempo real dos outros apps e tem uma página
 de detalhe por projeto (com galeria de telas).
 
+## Índice
+
+- [Stack](#stack)
+- [Estrutura](#estrutura)
+- [Como rodar local](#como-rodar-local)
+- [Endpoints](#endpoints)
+- [Funcionalidades da home](#funcionalidades-da-home)
+- [Health check dos serviços](#health-check-dos-serviços)
+- [Deploy](#deploy)
+- [Ambiente](#ambiente)
+- [Variáveis de ambiente](#variáveis-de-ambiente)
+- [Repositórios relacionados](#repositórios-relacionados)
+
 ## Stack
 
 - Django 5.1.7
