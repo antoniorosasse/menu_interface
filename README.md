@@ -78,6 +78,9 @@ Acessa em http://localhost:8000/
   atualizado por health check (ver seção abaixo).
 - **Botão "Detalhes"** em cada card, que abre a página `/projeto/<id>/`
   com a galeria completa de telas daquele projeto.
+- **Aviso de credenciais no hero**: o *Chat com IA · Empresas* (cnpj/chat)
+  exige login, então a home mostra `demo` / `demo` logo abaixo da explicação de
+  navegação, com a ressalva de que as consultas do chat são somente-leitura.
 - **Faixa de tecnologias interativa** no rodapé (17 pílulas): Django 5.1 a 6.1,
   Python 3.13, PostgreSQL 15, MongoDB 8, pgvector, sentence-transformers (Braza),
   DB2 (IBM i), JPype/JDBC, DeepSeek, OpenAI SDK, Chart.js, Bootstrap 5.3,
