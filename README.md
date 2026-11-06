@@ -99,6 +99,16 @@ Acessa em http://localhost:8000/
 - **Fonte dos cards**: além das tecnologias, os textos, URLs, stacks, destaques
   e galerias de cada card vivem na lista `projetos` de `_montar_contexto` — o
   template só itera. Health check e imagem de capa também saem de lá.
+- **Fontes de dados em cada card**: todo card declara `fontes` (lista de
+  `{curto, nome, url, obs}`). No card aparece uma linha discreta — *Dados ·
+  Receita Federal · Base dos Dados · …* — e cada item é um link externo
+  (`title` traz o `obs`). Na página `/projeto/<id>/` a mesma lista vira a seção
+  **Fontes de dados**, com o nome completo, a descrição e o link. As listas
+  ficam no topo de `core/views.py` (`FONTES_RFB`, `FONTES_CEP`, `FONTES_IBGE`,
+  `FONTES_EMPRESAS`); os cards de IBM i e do próprio site declaram `fontes: []`
+  e não mostram a linha. Todas as URLs foram testadas: dados.gov.br, Base dos
+  Dados, AddressForAll e Kaggle respondem 200; o IBGE responde 403 para bot
+  (bloqueio anti-scraping) mas abre no navegador.
 - **Texto exibido** (cards, faixa, títulos) é escrito com acentos; comentários,
   identificadores e nomes de tabela seguem sem acento (ver `.clinerules`).
 - **Dark mode** (tema claro/escuro) com:

@@ -87,6 +87,38 @@
             color: var(--text-muted);
             line-height: 1.6;
         }
+        /* Fontes publicas dos dados */
+        .fontes-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .fontes-lista li {
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .fontes-lista li:last-child { border-bottom: none; }
+        .fontes-lista li::before {
+            content: "🔗";
+            position: absolute;
+            left: 0;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+        .fontes-lista .fonte-link {
+            color: #2f81f7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .fontes-lista .fonte-link:hover { text-decoration: underline; }
+        .fontes-lista .fonte-obs {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
         .destaques-list li {
             padding-left: 1.2rem;
             position: relative;
@@ -302,6 +334,27 @@
                 </div>
             </div>
         </div>
+
+        <!-- Fontes publicas dos dados -->
+        {% if projeto.fontes %}
+        <div class="card-section">
+            <h5 class="mb-3">
+                <i class="bi bi-database-check text-{{ projeto.cor }}"></i> Fontes de dados
+                <small class="text-muted fs-6">({{ projeto.fontes|length }} bases públicas)</small>
+            </h5>
+            <ul class="fontes-lista">
+                {% for fonte in projeto.fontes %}
+                <li>
+                    <a href="{{ fonte.url }}"
+                       class="fonte-link"
+                       target="_blank"
+                       rel="noopener">{{ fonte.nome }}</a>
+                    <span class="fonte-obs">{{ fonte.obs }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
         <!-- Nota apenas do card de demonstracao (o proprio site) -->
         {% if projeto.demo %}

@@ -31,6 +31,70 @@ CACHE_TTL_OFFLINE = 10  # segundos (estado 'offline' - recupera rapido)
 HEALTH_TIMEOUT = 5      # segundos por tentativa
 
 
+# ============================================================
+# FONTES PUBLICAS DOS DADOS
+# ============================================================
+# Cada card declara de onde saem os dados que ele mostra. O link curto
+# aparece no rodape do card e a lista completa (com a descricao) na pagina
+# de detalhe do projeto. Todas as URLs foram testadas em 2026-08:
+# dados.gov.br, Base dos Dados, AddressForAll e Kaggle respondem 200;
+# o IBGE responde 403 para bot (bloqueio anti-scraping) mas abre no navegador.
+# O codigo dos Correios (eDNE) nao tem mais pagina propria no site deles:
+# o conjunto oficial hoje fica no dados.gov.br.
+
+FONTES_RFB = [
+    {
+        'curto': 'Receita Federal',
+        'nome': 'Receita Federal · dados.gov.br',
+        'url': 'https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj',
+        'obs': 'Base pública do CNPJ: 38,5M de estabelecimentos, sócios, CNAE e natureza jurídica',
+    },
+    {
+        'curto': 'Base dos Dados',
+        'nome': 'Base dos Dados · br_me_cnpj',
+        'url': 'https://basedosdados.org/dataset/br-me-cnpj',
+        'obs': 'Espelho tratado da RFB em BigQuery (usado para conferir totais e amostras)',
+    },
+]
+
+FONTES_CEP = [
+    {
+        'curto': 'Base dos Dados · CEP',
+        'nome': 'Base dos Dados · br_bd_diretorios_brasil.cep',
+        'url': 'https://basedosdados.org/dataset/br-bd-diretorios-brasil',
+        'obs': 'CEP com centroide em WKT (tabela cep) - o mesmo console BigQuery usado na carga',
+    },
+    {
+        'curto': 'AddressForAll',
+        'nome': 'AddressForAll',
+        'url': 'https://www.addressforall.org/pt/downloads/',
+        'obs': 'Endereços e CEPs abertos, derivados do CNEFE/IBGE',
+    },
+    {
+        'curto': 'GeoCEP (Kaggle)',
+        'nome': 'Kaggle · GeoCEP',
+        'url': 'https://www.kaggle.com/datasets/paulogladson/geo-cep',
+        'obs': 'CEP geocodificado por número do endereço (média por CEP na carga)',
+    },
+    {
+        'curto': 'Correios eDNE',
+        'nome': 'Correios · eDNE 2018',
+        'url': 'https://dados.gov.br/dados/conjuntos-dados/base-de-dados-dos-correios-e-dne',
+        'obs': 'Base oficial de logradouros por CEP (arquivo de 2018, prioridade baixa)',
+    },
+]
+
+FONTES_IBGE = [
+    {
+        'curto': 'IBGE',
+        'nome': 'IBGE · Malha Municipal 2025',
+        'url': 'https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais/15774-malhas.html',
+        'obs': 'Código TOM ↔ IBGE de cada município (liga c_estabelecimentos.municipio a c_ceps.id_municipio)',
+    },
+]
+
+# Fontes do card de empresas: CNPJ (RFB) + CEP (geocodificação) + IBGE.
+FONTES_EMPRESAS = FONTES_RFB + FONTES_CEP + FONTES_IBGE
 
 
 def _check_url(url: str) -> dict:
@@ -240,6 +304,7 @@ def _montar_contexto(request):
                 {'arquivo': 'cnpj/detalhe-endereco.png',      'titulo': 'Detalhe: endereço'},
                 {'arquivo': 'cnpj/detalhe-estab-socios.png',  'titulo': 'Detalhe: estabelecimentos e sócios'},
             ],
+            'fontes': FONTES_EMPRESAS,
             **_status_do_card('cnpj'),
         },
         {
@@ -263,6 +328,7 @@ def _montar_contexto(request):
                 {'arquivo': 'chat-cnpj/chat-resposta.png',   'titulo': 'Resposta da IA'},
                 {'arquivo': 'chat-cnpj/chat-graficos.png',   'titulo': 'Gráficos'},
             ],
+            'fontes': FONTES_RFB,
             **_status_do_card('chat_emp'),
         },
         {
@@ -288,6 +354,7 @@ def _montar_contexto(request):
                 {'arquivo': 'ibmi-db2/exclusao.png',         'titulo': 'Exclusão'},
                 {'arquivo': 'ibmi-db2/api.png',              'titulo': 'API de dados'},
             ],
+            'fontes': [],
             **_status_do_card('as400'),
         },
         {
@@ -309,6 +376,7 @@ def _montar_contexto(request):
                 {'arquivo': 'chat-ibmi-db2/chat-1.png',         'titulo': 'Interface do chat'},
                 {'arquivo': 'chat-ibmi-db2/chat-resposta.png',  'titulo': 'Resposta da IA'},
             ],
+            'fontes': [],
             **_status_do_card('chat_pes'),
         },
         # ============================================================
@@ -334,6 +402,7 @@ def _montar_contexto(request):
                 'Cards e página de detalhe em Python puro (sem models, sem fixtures)',
             ],
             'galeria': [],
+            'fontes': [],
             'status': '🔵 Demo ao vivo',
             'status_cor': 'info',
         },

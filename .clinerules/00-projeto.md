@@ -42,6 +42,17 @@ algo mudar, atualize o `PROJETOS.md`.
   `chat_pessoas` e `menu` (este site, como **demonstracao ao vivo**, com
   `demo: True`, `imagem: None` e status fixo "Demo ao vivo"); mais
   `repos_sem_card` (so `ProjetoCargaDados`). Versao exibida: `1.4`.
+- **Fontes de dados dos cards** (05/11/2026): cada card tem a chave `fontes`
+  (lista de `{curto, nome, url, obs}`) montada a partir de `FONTES_RFB`,
+  `FONTES_CEP`, `FONTES_IBGE` e `FONTES_EMPRESAS` no **topo** de `core/views.py`.
+  `menu.html` renderiza uma linha discreta (`.fontes-linha` + `.fonte-link`) e
+  `projeto.html` a secao "Fontes de dados" (`.fontes-lista`). Cards sem base
+  externa (`as400`, `chat_pessoas`, `menu`) usam `fontes: []` e **nao** mostram a
+  linha. Regras: todo item precisa de `curto`, `nome`, `url` (https) e `obs`;
+  antes de adicionar URL nova, teste com `curl -s -o /dev/null -w '%{http_code}'`
+  — dado.gov.br/Base dos Dados/AddressForAll/Kaggle respondem 200, o IBGE
+  responde 403 para bot (e abre no navegador). Nao usar a URL antiga do eDNE no
+  site dos Correios (404): o conjunto oficial esta no dados.gov.br.
 - Rotas (`core/urls.py`): `''` (`core:menu`), `projeto/<str:projeto_id>/`
   (`core:detalhe_projeto`, HTTP 404 se o id nao existe), `health/` (texto `ok`)
   e `admin/`.
@@ -55,7 +66,7 @@ algo mudar, atualize o `PROJETOS.md`.
     source venv/bin/activate
     python manage.py runserver 8000          # http://localhost:8000/
     python manage.py check
-    python manage.py test core               # core/tests.py esta vazio hoje
+    python manage.py test core               # 8 testes em core/tests.py (fontes dos cards)
     bash ~/Projetos/start_all.sh             # sobe 8000, 8001 e 8002
     cd ~/Projetos && ./deploy.sh menu        # producao (pedir confirmacao)
 
