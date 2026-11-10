@@ -1,9 +1,10 @@
 # Menu Interface
 
-Página inicial do Sistema Integrado (arosasse.tech). Mostra 5 cards — os 4
-módulos do sistema e este próprio site como **demonstração ao vivo** do
-portfólio —, faz health check em tempo real dos outros apps e tem uma página
-de detalhe por projeto (com galeria de telas).
+Página inicial do Sistema Integrado (arosasse.tech). Mostra **7 cards em duas
+seções** — os 6 apps do sistema (4 do `cnpj_interface`, 2 do `as400_interface`)
+e este próprio site como **demonstração ao vivo** do portfólio —, faz health
+check em tempo real dos outros apps e tem uma página de detalhe por projeto
+(com galeria de telas).
 
 ## Índice
 
@@ -62,18 +63,32 @@ Acessa em http://localhost:8000/
 
 | Método | URL | O que faz |
 |---|---|---|
-| GET | `/` | Página do menu (5 cards + faixa de tecnologias) |
+| GET | `/` | Página do menu (7 cards em 2 seções + faixa de tecnologias) |
 | GET | `/projeto/<id>/` | Página de detalhe de um projeto (galeria) |
 | GET | `/health/` | Health check leve (responde `ok`) |
 
 ## Funcionalidades da home
 
-- **5 cards**: os 4 projetos do sistema (`cnpj`, `chat_empresas`, `as400`,
-  `chat_pessoas`) + o card `menu`, que apresenta este site como
-  **demonstração ao vivo** do portfólio (sem health check: ele mostraria a si
-  mesmo; status fixo "Demo ao vivo", imagem de capa gerada por CSS e botão
-  "Ver em produção"). Cada card tem imagem de capa, badges de stack, lista de
-  destaques técnicos e botão de acesso.
+- **Duas seções** (`secoes` em `_montar_contexto`, cada card declara `secao`):
+  **"Empresas · CNPJ"** com 5 cards em destaque (consulta, chat com IA,
+  **proximidade**, **estatísticas** e este site) e **"Outros projetos em
+  produção (IBM i · DB2)"** com os 2 apps do AS/400 em card reduzido. A
+  descrição de cada seção (`.secao-desc`) tem o **mesmo corpo do título**
+  (`1.05rem`, cor de texto normal) — antes era `0.82rem` em `--text-muted` e
+  sumia ao lado do título. Os cards de proximidade e estatísticas usam
+  `sem_status: true` (dividem o serviço do card de consulta, então o badge de
+  saúde seria redundante).
+- **Botões no rodapé do card**: o corpo é uma coluna flex e o bloco de botões
+  (`.card-acoes`) usa `margin-top: auto`, então **o topo dos botões fica na
+  mesma linha** em todos os cards da linha, independente do tamanho do texto.
+  "Ver em produção" usa `white-space: nowrap` (não quebra em duas linhas).
+- **7 cards**: os 6 apps do sistema (`cnpj`, `chat_empresas`, `proximidade`,
+  `estatisticas`, `as400`, `chat_pessoas`) + o card `menu`, que apresenta este
+  site como **demonstração ao vivo** do portfólio (sem health check: ele
+  mostraria a si mesmo; status fixo "Demo ao vivo", imagem de capa gerada por
+  CSS e botão "Ver em produção"). Cada card tem imagem de capa (`aspect-ratio:
+  16 / 9`), badges de stack, destaques técnicos (2 no card, com
+  `-webkit-line-clamp`) e botão de acesso.
 - **Badge de status dinâmico por card** (🟢 No ar / 🟡 Lento / 🔴 Fora),
   atualizado por health check (ver seção abaixo).
 - **Botão "Detalhes"** em cada card, que abre a página `/projeto/<id>/`
