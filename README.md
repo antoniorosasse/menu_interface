@@ -1,6 +1,6 @@
 # Menu Interface
 
-Página inicial do Sistema Integrado (arosasse.tech). Mostra **7 cards em duas
+Página inicial do Sistema Integrado (busquecnpj.com.br). Mostra **7 cards em duas
 seções** — os 6 apps do sistema (4 do `cnpj_interface`, 2 do `as400_interface`)
 e este próprio site como **demonstração ao vivo** do portfólio —, faz health
 check em tempo real dos outros apps e tem uma página de detalhe por projeto
@@ -159,10 +159,10 @@ em portas diferentes:
 
 Em produção:
 
-- IBM i · DB2 · Pessoas: `https://as400.arosasse.tech/health/deep/`
-- Chat IA · Pessoas: `https://as400.arosasse.tech/health/deep/`
-- Consulta Empresas: `https://cnpj.arosasse.tech/health/deep/`
-- Chat IA · Empresas: `https://chat.arosasse.tech/chat/health/deep/`
+- IBM i · DB2 · Pessoas: `https://as400.busquecnpj.com.br/health/deep/`
+- Chat IA · Pessoas: `https://as400.busquecnpj.com.br/health/deep/`
+- Consulta Empresas: `https://cnpj.busquecnpj.com.br/health/deep/`
+- Chat IA · Empresas: `https://chat.busquecnpj.com.br/chat/health/deep/`
 
 **Nota:** o timeout por chamada é `HEALTH_TIMEOUT = 5` segundos (hardcoded
 em `core/views.py`).
@@ -176,7 +176,7 @@ Na máquina NoteNeto:
 ## Ambiente
 
 - **Local:** http://localhost:8000
-- **Produção:** https://arosasse.tech
+- **Produção:** https://busquecnpj.com.br
 
 ## Variáveis de ambiente
 
