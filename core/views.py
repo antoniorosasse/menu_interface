@@ -235,9 +235,9 @@ def _montar_contexto(request):
         ambiente_nome = '🖥 Desenvolvimento Local'
         ambiente_cor = 'warning'
     else:
-        as400_base   = 'https://as400.arosasse.tech'
-        cnpj_base    = 'https://cnpj.arosasse.tech'
-        chat_ia_base = 'https://chat.arosasse.tech'
+        as400_base   = 'https://as400.busquecnpj.com.br'
+        cnpj_base    = 'https://cnpj.busquecnpj.com.br'
+        chat_ia_base = 'https://chat.busquecnpj.com.br'
 
         ambiente_nome = '🚀 Produção'
         ambiente_cor = 'success'
@@ -442,9 +442,9 @@ def _montar_contexto(request):
         {
             'id': 'menu',
             'secao': 'cnpj',
-            'nome': 'Este site · Portfólio arosasse.tech',
+            'nome': 'Este site · Portfólio busquecnpj.com.br',
             'descricao': 'A página que você está vendo: hub em Django que reúne os 4 apps, monitora a saúde de cada um e mostra a stack real de cada projeto. É a demonstração ao vivo do portfólio.',
-            'url': 'https://arosasse.tech',
+            'url': 'https://busquecnpj.com.br',
             'repo': 'https://github.com/antoniorosasse/menu_interface',
             'icon': 'bi bi-window-stack',
             'cor': 'secondary',
