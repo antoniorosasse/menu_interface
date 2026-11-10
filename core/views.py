@@ -250,6 +250,9 @@ def _montar_contexto(request):
         'chat_pes': f'{as400_base}/chat-pessoas/',
         'cnpj':     f'{cnpj_base}/',
         'chat_emp': f'{chat_ia_base}/chat/',
+        # Paginas do cnpj_interface que ganharam card proprio no menu
+        'proximidade':  f'{cnpj_base}/proximidade/',
+        'estatisticas': f'{cnpj_base}/estatisticas/',
     }
 
     # ============================================================
@@ -283,6 +286,7 @@ def _montar_contexto(request):
     projetos = [
         {
             'id': 'cnpj',
+            'secao': 'cnpj',
             'nome': 'Consulta Empresas · Receita Federal',
             'descricao': 'Consulta de CNPJ sobre a base pública da RFB (38,5 milhões de estabelecimentos) com filtros, keyset pagination e estatísticas.',
             'url': urls['cnpj'],
@@ -309,6 +313,7 @@ def _montar_contexto(request):
         },
         {
             'id': 'chat_empresas',
+            'secao': 'cnpj',
             'nome': 'Chat com IA · Empresas (Receita Federal)',
             'descricao': 'Pergunte em linguagem natural sobre as empresas da RFB. Pipeline RAG (recuperação vetorial + SQL) com validação em 4 camadas e resposta ancorada nos dados.',
             'url': urls['chat_emp'],
@@ -332,7 +337,55 @@ def _montar_contexto(request):
             **_status_do_card('chat_emp'),
         },
         {
+            'id': 'proximidade',
+            'secao': 'cnpj',
+            'nome': 'Empresas por proximidade',
+            'descricao': 'Encontre estabelecimentos num raio de até 100 km a partir de um CNPJ, CEP, cidade ou coordenada, com a distância em km de cada resultado.',
+            'url': urls['proximidade'],
+            'repo': 'https://github.com/antoniorosasse/cnpj_interface',
+            'icon': 'bi bi-geo-alt',
+            'cor': 'success',
+            'imagem': None,
+            # Mesmo servico do card de consulta: o badge de status seria redundante
+            'sem_status': True,
+            'stack': ['Django 6.1', 'PostgreSQL 15', 'Haversine (sem PostGIS)', 'Keyset + salto de página'],
+            'destaques': [
+                'Bounding box + haversine em SQL puro (o servidor não tem PostGIS)',
+                'Paginação keyset com "Página X de Y" e o campo "Ir para a página"',
+                'Filtro de situação cadastral usando a tabela agregada por CEP e situação',
+                'Janela cumulativa por km para não estourar o statement_timeout no PG 16',
+            ],
+            'galeria': [],
+            'fontes': FONTES_CEP + FONTES_IBGE,
+            **_status_do_card('cnpj'),
+        },
+        {
+            'id': 'estatisticas',
+            'secao': 'cnpj',
+            'nome': 'Estatísticas da base',
+            'descricao': 'Totais pré-agregados de 38,5 milhões de estabelecimentos: situação, Simples/MEI, Top 10 UFs, porte, natureza jurídica e CNAE.',
+            'url': urls['estatisticas'],
+            'repo': 'https://github.com/antoniorosasse/cnpj_interface',
+            'icon': 'bi bi-bar-chart-line',
+            'cor': 'info',
+            'imagem': None,
+            # Mesmo servico do card de consulta: o badge de status seria redundante
+            'sem_status': True,
+            'stack': ['Django 6.1', 'PostgreSQL 15', 'c_estatisticas_totais', '<5 ms por consulta'],
+            'destaques': [
+                'Lê a tabela pré-agregada c_estatisticas_totais em menos de 5 ms (sem COUNT(*) na base de 38,5M)',
+                'Top 10 UFs, situação, porte, natureza jurídica e CNAE com percentual',
+                'Recálculo do agregado sob demanda (/estatisticas/recalcular/)',
+                'Mostra a data da última atualização de cada total',
+            ],
+            'galeria': [],
+            'fontes': FONTES_RFB,
+            **_status_do_card('cnpj'),
+        },
+        {
             'id': 'as400',
+            'secao': 'as400',
+            'secundario': True,
             'nome': 'IBM i · DB2 · Pessoas',
             'descricao': 'CRUD completo de uma tabela de pessoas armazenadas em um banco DB2 hospedado num IBM i (AS/400) remoto (pub400.com) via JDBC.',
             'url': urls['as400'],
@@ -359,6 +412,8 @@ def _montar_contexto(request):
         },
         {
             'id': 'chat_pessoas',
+            'secao': 'as400',
+            'secundario': True,
             'nome': 'Chat com IA · Pessoas (IBM i · DB2)',
             'descricao': 'Pergunte em linguagem natural sobre os dados de pessoas do DB2 e receba a resposta em SQL executado.',
             'url': urls['chat_pes'],
@@ -386,6 +441,7 @@ def _montar_contexto(request):
         # poderia travar um gunicorn de 1 worker. O status e' fixo.
         {
             'id': 'menu',
+            'secao': 'cnpj',
             'nome': 'Este site · Portfólio arosasse.tech',
             'descricao': 'A página que você está vendo: hub em Django que reúne os 4 apps, monitora a saúde de cada um e mostra a stack real de cada projeto. É a demonstração ao vivo do portfólio.',
             'url': 'https://arosasse.tech',
@@ -405,6 +461,31 @@ def _montar_contexto(request):
             'fontes': [],
             'status': '🔵 Demo ao vivo',
             'status_cor': 'info',
+        },
+    ]
+
+    # ============================================================
+    # SECOES DO MENU
+    # ============================================================
+    # Os 5 cards em destaque (4 do sistema CNPJ + o card deste site) ficam na
+    # primeira secao; os 2 apps de IBM i/DB2 aparecem abaixo, em card reduzido.
+    # 'projetos' continua plano, porque detalhe_projeto busca o id nessa lista.
+    secoes = [
+        {
+            'id': 'cnpj',
+            'titulo': 'Empresas · CNPJ',
+            'descricao': 'Consulta, chat com IA, busca por proximidade e estatísticas sobre a base pública da Receita Federal.',
+            'classe_grid': 'row-cols-1 row-cols-md-2 row-cols-xl-3',
+            'compacto': False,
+            'projetos': [p for p in projetos if p.get('secao') == 'cnpj'],
+        },
+        {
+            'id': 'as400',
+            'titulo': 'Outros projetos em produção (IBM i · DB2)',
+            'descricao': 'CRUD e chat com IA sobre uma tabela DB2 hospedada num IBM i remoto, acessado por JDBC.',
+            'classe_grid': 'row-cols-1 row-cols-md-2',
+            'compacto': True,
+            'projetos': [p for p in projetos if p.get('secao') == 'as400'],
         },
     ]
 
@@ -519,6 +600,7 @@ def _montar_contexto(request):
 
     return {
         'projetos': projetos,
+        'secoes': secoes,
         'tecnologias': tecnologias,
         'repos_sem_card': [
             {'nome': 'ProjetoCargaDados', 'descricao': 'ETL em linha de comando: Parquet da Receita Federal -> Postgres/Mongo, e PESSOAS no DB2', 'url': 'https://github.com/antoniorosasse/ProjetoCargaDados'},
