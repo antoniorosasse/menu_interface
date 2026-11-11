@@ -32,6 +32,38 @@ HEALTH_TIMEOUT = 5      # segundos por tentativa
 
 
 # ============================================================
+# HOSTS E URLS DO SITE
+# ============================================================
+# O mesmo processo (menu.service) serve dois sites e escolhe pelo Host:
+#   - busquecnpj.com.br (e www) -> landing comercial
+#   - qualquer outro host       -> menu/portfolio (arosasse.tec.br)
+#
+# Durante a transicao o portfolio atende em portfolio.busquecnpj.com.br;
+# quando o dominio proprio entrar, a virada e' so de .env (PORTFOLIO_URL
+# e ALLOWED_HOSTS) + restart. Nenhuma linha de codigo muda.
+
+def _hosts_env(nome: str, default: str) -> set:
+    """Le do ambiente uma lista de hosts separada por virgula."""
+    bruto = os.getenv(nome, default)
+    return {h.strip().lower() for h in bruto.split(',') if h.strip()}
+
+
+HOSTS_COMERCIAL = _hosts_env(
+    'HOSTS_COMERCIAL', 'busquecnpj.com.br,www.busquecnpj.com.br'
+)
+PORTFOLIO_URL = os.getenv('PORTFOLIO_URL', 'https://arosasse.tec.br').rstrip('/')
+
+
+# ============================================================
+# LANDING COMERCIAL (busquecnpj.com.br)
+# ============================================================
+# Ids dos cards de _montar_contexto usados em cada bloco da landing.
+# Mexer aqui nao mexe no menu/portfolio.
+CARDS_LANDING_DESTAQUE = ('cnpj', 'chat_empresas', 'proximidade')
+CARDS_LANDING_SECUNDARIOS = ('estatisticas', 'as400', 'chat_pessoas')
+
+
+# ============================================================
 # FONTES PUBLICAS DOS DADOS
 # ============================================================
 # Cada card declara de onde saem os dados que ele mostra. O link curto
@@ -442,9 +474,9 @@ def _montar_contexto(request):
         {
             'id': 'menu',
             'secao': 'cnpj',
-            'nome': 'Este site · Portfólio busquecnpj.com.br',
+            'nome': 'Este site · Portfólio',
             'descricao': 'A página que você está vendo: hub em Django que reúne os 4 apps, monitora a saúde de cada um e mostra a stack real de cada projeto. É a demonstração ao vivo do portfólio.',
-            'url': 'https://busquecnpj.com.br',
+            'url': PORTFOLIO_URL,
             'repo': 'https://github.com/antoniorosasse/menu_interface',
             'icon': 'bi bi-window-stack',
             'cor': 'secondary',
@@ -610,7 +642,44 @@ def _montar_contexto(request):
         'ambiente_cor': ambiente_cor,
         'is_local': is_local,
         'host_atual': host_completo,
+        'portfolio_url': PORTFOLIO_URL,
     }
+
+
+def home(request):
+    """
+    Entrada do site: escolhe a pagina pelo Host da requisicao.
+
+    - busquecnpj.com.br / www  -> landing comercial (site de servicos)
+    - qualquer outro host      -> menu/portfolio
+
+    A lista de hosts comerciais vem do .env (HOSTS_COMERCIAL), entao a
+    troca do dominio do portfolio nao exige mexer aqui.
+    """
+    host = request.get_host().split(':')[0].lower()
+    if host in HOSTS_COMERCIAL:
+        return landing_comercial(request)
+    return menu_principal(request)
+
+
+def landing_comercial(request):
+    """
+    Landing do site comercial (busquecnpj.com.br).
+
+    Reusa _montar_contexto para herdar as URLs dos apps (dev: :8001/:8002,
+    prod: subdominios) e o health check com cache de 60s. Os cards que
+    aparecem em cada bloco saem de CARDS_LANDING_DESTAQUE/SECUNDARIOS.
+    """
+    context = _montar_contexto(request)
+    por_id = {p['id']: p for p in context['projetos']}
+
+    context['cards_destaque'] = [por_id[i] for i in CARDS_LANDING_DESTAQUE if i in por_id]
+    context['cards_secundarios'] = [por_id[i] for i in CARDS_LANDING_SECUNDARIOS if i in por_id]
+    context['todos_online'] = bool(context['cards_destaque']) and all(
+        c['status_cor'] == 'success' for c in context['cards_destaque']
+    )
+
+    return render(request, 'core/landing.html', context)
 
 
 def menu_principal(request):

@@ -6,10 +6,17 @@ O health check dos apps remotos e mockado: teste nao faz requisicao de rede.
 """
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from core.views import FONTES_CEP, FONTES_EMPRESAS, FONTES_IBGE, FONTES_RFB
+from core.views import (
+    CARDS_LANDING_DESTAQUE,
+    FONTES_CEP,
+    FONTES_EMPRESAS,
+    FONTES_IBGE,
+    FONTES_RFB,
+    PORTFOLIO_URL,
+)
 
 SAUDE_OK = {'status': 'online', 'code': 200, 'ms': 10, 'erro': None}
 
@@ -141,4 +148,64 @@ class FontesDeDadosTests(TestCase):
     def test_detalhe_de_projeto_inexistente_da_404(self):
         resp = self.client.get(reverse('core:detalhe_projeto', args=['nao-existe']))
         self.assertEqual(resp.status_code, 404)
+
+
+class HomePorHostTests(TestCase):
+    """A raiz (/) escolhe a pagina pelo Host da requisicao.
+
+    - hosts de HOSTS_COMERCIAL -> landing comercial (busquecnpj.com.br)
+    - qualquer outro host      -> menu/portfolio (arosasse.tec.br; hoje
+                                  portfolio.busquecnpj.com.br)
+
+    O Host comercial vem de HOSTS_COMERCIAL, lido do .env: por isso os
+    testes de Host precisam de override_settings(ALLOWED_HOSTS=...), senao
+    o test client manda 'testserver' e o Django nem chega na view.
+    """
+
+    def setUp(self):
+        p = patch('core.views._check_health_deep_cached', return_value=SAUDE_OK)
+        p.start()
+        self.addCleanup(p.stop)
+
+    @override_settings(
+        ALLOWED_HOSTS=['testserver', 'busquecnpj.com.br', 'www.busquecnpj.com.br'],
+    )
+    def test_hosts_comerciais_recebem_a_landing(self):
+        for host in ('busquecnpj.com.br', 'www.busquecnpj.com.br'):
+            with self.subTest(host=host):
+                resp = self.client.get('/', HTTP_HOST=host)
+                self.assertEqual(resp.status_code, 200)
+                self.assertTemplateUsed(resp, 'core/landing.html')
+                self.assertContains(resp, 'O que está no ar')
+                # nada do menu/portfolio vaza para o site comercial
+                self.assertNotContains(resp, 'Tecnologias usadas nos projetos')
+
+    @override_settings(ALLOWED_HOSTS=['testserver', 'portfolio.busquecnpj.com.br'])
+    def test_host_do_portfolio_recebe_o_menu(self):
+        resp = self.client.get('/', HTTP_HOST='portfolio.busquecnpj.com.br')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'core/menu.html')
+        self.assertContains(resp, 'Tecnologias usadas nos projetos')
+        self.assertNotContains(resp, 'O que está no ar')
+
+    def test_preview_da_landing_em_site_e_os_tres_produtos(self):
+        """'/site/' mostra a landing em qualquer host (util no runserver)."""
+        resp = self.client.get(reverse('core:landing'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'core/landing.html')
+
+        ids = [card['id'] for card in resp.context['cards_destaque']]
+        self.assertEqual(ids, list(CARDS_LANDING_DESTAQUE))
+        html = resp.content.decode()
+        for card in resp.context['cards_destaque']:
+            with self.subTest(produto=card['id']):
+                self.assertIn(card['url'], html)
+
+    def test_canonical_e_cta_do_portfolio_seguem_o_dot_env(self):
+        """Trocar PORTFOLIO_URL no .env muda o site sem mexer em codigo."""
+        resp = self.client.get(reverse('core:menu'))
+        self.assertContains(resp, f'<link rel="canonical" href="{PORTFOLIO_URL}/">')
+
+        landing = self.client.get(reverse('core:landing'))
+        self.assertContains(landing, f'href="{PORTFOLIO_URL}"')
 

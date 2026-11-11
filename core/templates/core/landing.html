@@ -1,0 +1,555 @@
+{% load static %}
+<!-- /home/neto/menu_interface/core/templates/core/landing.html -->
+<!--
+  Landing do site comercial (busquecnpj.com.br).
+  Servida por core.views.landing_comercial, que reusa _montar_contexto:
+  os cards chegam com nome, descricao, url, imagem, stack e status reais.
+  O menu/portfolio continua em core/menu.html (arosasse.tec.br).
+-->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>busquecnpj — consulta de empresas, busca por proximidade e chat com IA</title>
+    <meta name="description" content="Consulta de CNPJ sobre os dados públicos da Receita Federal, busca de empresas por proximidade e chat com IA que responde em português consultando a base real.">
+    <link rel="canonical" href="https://busquecnpj.com.br/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="busquecnpj">
+    <meta property="og:title" content="busquecnpj — dados públicos de empresas, prontos para usar">
+    <meta property="og:description" content="Consulta de CNPJ, busca por proximidade e chat com IA sobre 38,5 milhões de estabelecimentos da Receita Federal.">
+    <meta property="og:url" content="https://busquecnpj.com.br/">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --brand-dark: #0b2545;
+            --brand: #13315c;
+            --brand-soft: #eef2f8;
+            --accent: #16a34a;
+            --accent-dark: #12813b;
+            --text: #1e293b;
+            --text-muted: #5b6b82;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 2px 12px rgba(15, 23, 42, 0.07);
+            --shadow-hover: 0 18px 38px rgba(15, 23, 42, 0.16);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            color: var(--text);
+            background: #f7f9fc;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* ---------------- NAV ---------------- */
+        .topbar {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+        }
+        .topbar .marca {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--brand-dark);
+            text-decoration: none;
+        }
+        .topbar .marca i { color: var(--accent); }
+        .topbar .nav-link { color: var(--text-muted); font-size: 0.95rem; }
+        .topbar .nav-link:hover { color: var(--brand-dark); }
+
+        /* ---------------- HERO ---------------- */
+        .hero {
+            background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 55%, #1d4b86 100%);
+            color: #f8fafc;
+            padding: 4.5rem 0 4rem;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 4.6vw, 3.2rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.12;
+        }
+        .hero p.lead {
+            color: #cbd8e8;
+            max-width: 44rem;
+            font-size: 1.1rem;
+        }
+        .hero .selo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            font-size: 0.85rem;
+            color: #e2ecf8;
+        }
+        .hero .selo .ponto {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+        }
+        .hero .selo .ponto.off {
+            background: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-acao {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-weight: 600;
+        }
+        .btn-acao:hover, .btn-acao:focus {
+            background: var(--accent-dark);
+            border-color: var(--accent-dark);
+            color: #fff;
+        }
+        .btn-fantasma { border-color: rgba(255, 255, 255, 0.45); color: #eaf1f9; }
+        .btn-fantasma:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* ---------------- SECOES ---------------- */
+        .secao { padding: 3.5rem 0; }
+        .secao-alt {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .secao-titulo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--brand-dark);
+        }
+        .secao-desc { color: var(--text-muted); max-width: 46rem; }
+
+        /* ---------------- CARDS DE PRODUTO ---------------- */
+        .card-produto {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-produto:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+        .card-produto .shot {
+            position: relative;
+            aspect-ratio: 16 / 10;
+            background: linear-gradient(135deg, #e8eef8, #dbe6f6);
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-produto .shot img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top center;
+            display: block;
+        }
+        .card-produto .shot .fallback {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.4rem; color: var(--brand);
+        }
+        .card-produto .corpo {
+            padding: 1.25rem 1.25rem 1.1rem;
+            display: flex; flex-direction: column; gap: 0.65rem;
+            flex: 1 1 auto;
+        }
+        .card-produto h3 {
+            font-size: 1.12rem; font-weight: 700; margin: 0;
+            color: var(--brand-dark);
+        }
+        .card-produto h3 i { color: var(--brand); }
+        .card-produto p.desc {
+            color: var(--text-muted); font-size: 0.94rem; margin: 0;
+            line-height: 1.55;
+        }
+        .pilulas { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .pilula {
+            font-size: 0.74rem;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            background: var(--brand-soft);
+            color: #33507a;
+            border: 1px solid #dbe4f1;
+            white-space: nowrap;
+        }
+        .card-produto .acoes { margin-top: auto; padding-top: 0.35rem; }
+        .status-mini { font-size: 0.76rem; color: var(--text-muted); }
+        .nota-demo {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-left: 3px solid var(--accent);
+            padding-left: 0.55rem;
+            line-height: 1.45;
+        }
+        .nota-demo code { color: var(--brand-dark); background: var(--brand-soft); padding: 0 0.2rem; }
+
+        /* ---------------- LISTA SECUNDARIA ---------------- */
+        .item-secundario {
+            display: flex; align-items: center; gap: 0.85rem;
+            padding: 0.85rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none; color: var(--text);
+            box-shadow: var(--shadow);
+            transition: border-color 0.15s ease, transform 0.15s ease;
+            height: 100%;
+        }
+        .item-secundario:hover {
+            border-color: #b9cbe6;
+            transform: translateY(-2px);
+            color: var(--text);
+        }
+        .item-secundario .icone {
+            width: 38px; height: 38px; flex: 0 0 38px;
+            border-radius: 10px;
+            background: var(--brand-soft);
+            color: var(--brand);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.05rem;
+        }
+        .item-secundario .txt { min-width: 0; }
+        .item-secundario .txt strong {
+            display: block; font-size: 0.95rem; color: var(--brand-dark);
+        }
+        .item-secundario .txt span {
+            display: block; font-size: 0.82rem; color: var(--text-muted);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        /* ---------------- SERVICOS ---------------- */
+        .card-servico {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem 1.35rem;
+            height: 100%;
+            box-shadow: var(--shadow);
+        }
+        .card-servico .icone {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #e7f5ec, #d3ecdc);
+            color: var(--accent-dark);
+            font-size: 1.25rem;
+            margin-bottom: 0.9rem;
+        }
+        .card-servico h3 {
+            font-size: 1.02rem; font-weight: 700; color: var(--brand-dark);
+        }
+        .card-servico p {
+            font-size: 0.92rem; color: var(--text-muted); margin: 0; line-height: 1.6;
+        }
+
+        /* ---------------- FAIXA PORTFOLIO ---------------- */
+        .faixa-portfolio {
+            background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+            color: #eaf1f9;
+            border-radius: 18px;
+            padding: 2rem;
+        }
+        .faixa-portfolio h2 { font-size: 1.35rem; font-weight: 700; color: #fff; }
+        .faixa-portfolio p { color: #c3d3e6; margin: 0; font-size: 0.95rem; }
+        .faixa-portfolio .tech {
+            font-size: 0.78rem;
+            padding: 0.22rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            color: #dbe7f5;
+        }
+
+        /* ---------------- FOOTER ---------------- */
+        footer.rodape {
+            background: #0a1c33;
+            color: #a9bacd;
+            padding: 2.5rem 0 1.5rem;
+            font-size: 0.9rem;
+        }
+        footer.rodape a { color: #dbe7f5; text-decoration: none; }
+        footer.rodape a:hover { color: #fff; text-decoration: underline; }
+        footer.rodape .marca-rodape {
+            font-weight: 700; color: #fff; letter-spacing: -0.01em;
+        }
+        footer.rodape hr { border-color: rgba(255, 255, 255, 0.12); }
+        footer.rodape .rotulo {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            color: #8fa4bb;
+        }
+        @media (max-width: 575.98px) {
+            .hero { padding: 3rem 0 2.5rem; }
+            .secao { padding: 2.5rem 0; }
+            .faixa-portfolio { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===================== NAV ===================== -->
+    <nav class="topbar sticky-top py-2">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a class="marca fs-5" href="/">
+                <i class="bi bi-building me-1"></i>busquecnpj
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a class="nav-link d-none d-md-inline" href="#solucoes">Soluções</a>
+                <a class="nav-link d-none d-md-inline" href="#servicos">Serviços</a>
+                <a class="nav-link d-none d-md-inline" href="#contato">Contato</a>
+                {% if cards_destaque %}
+                <a class="btn btn-sm btn-acao" href="{{ cards_destaque.0.url }}" target="_blank" rel="noopener">
+                    Abrir o sistema <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===================== HERO ===================== -->
+    <header class="hero">
+        <div class="container">
+            <span class="selo mb-3">
+                <span class="ponto{% if not todos_online %} off{% endif %}"></span>
+                {% if todos_online %}Sistemas no ar{% else %}Sistemas em operação{% endif %}
+                · 38,5 milhões de estabelecimentos
+            </span>
+            <h1 class="mt-2 mb-3">
+                Dados públicos de empresas,<br class="d-none d-lg-block">
+                prontos para consultar.
+            </h1>
+            <p class="lead mb-4">
+                Consulta de CNPJ, busca por proximidade e chat com IA — sobre a base
+                pública da Receita Federal, com endereço, sócios e atividade de cada
+                estabelecimento do Brasil.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-acao px-4 py-2" href="#solucoes">
+                    Ver as soluções <i class="bi bi-arrow-down ms-1"></i>
+                </a>
+                <a class="btn btn-outline-light btn-fantasma px-4 py-2" href="#contato">
+                    Falar sobre um projeto
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== SOLUCOES ===================== -->
+    <section class="secao" id="solucoes">
+        <div class="container">
+            <div class="mb-4">
+                <h2 class="secao-titulo">O que está no ar</h2>
+                <p class="secao-desc mb-0">
+                    Três formas de chegar ao mesmo dado: consulta direta, busca por
+                    localização e conversa em português. Tudo em produção, com o
+                    status verificado em tempo real.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                {% for card in cards_destaque %}
+                <div class="col-12 col-lg-4">
+                    <article class="card-produto">
+                        <div class="shot">
+                            <div class="fallback"><i class="{{ card.icon }}"></i></div>
+                            {% if card.imagem %}
+                            <img src="{% static card.imagem %}" alt="Tela do sistema {{ card.nome }}"
+                                 loading="lazy" onerror="this.style.display='none'">
+                            {% endif %}
+                        </div>
+                        <div class="corpo">
+                            <h3><i class="{{ card.icon }} me-2"></i>{{ card.nome }}</h3>
+                            <p class="desc">{{ card.descricao }}</p>
+
+                            <div class="pilulas">
+                                {% for tech in card.stack|slice:":3" %}
+                                <span class="pilula">{{ tech }}</span>
+                                {% endfor %}
+                            </div>
+
+                            {% if card.id == 'chat_empresas' %}
+                            <div class="nota-demo">
+                                Login de demonstração: <code>demo</code> / <code>demo</code>.
+                                As consultas do chat rodam em modo somente-leitura.
+                            </div>
+                            {% endif %}
+
+                            <div class="acoes d-flex align-items-center justify-content-between gap-2">
+                                <span class="status-mini">{{ card.status }}</span>
+                                <a class="btn btn-sm btn-acao" href="{{ card.url }}" target="_blank" rel="noopener">
+                                    Acessar <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if cards_secundarios %}
+            <div class="row g-3 mt-4">
+                {% for card in cards_secundarios %}
+                <div class="col-12 col-md-6 col-xl-4">
+                    <a class="item-secundario" href="{{ card.url }}" target="_blank" rel="noopener">
+                        <span class="icone"><i class="{{ card.icon }}"></i></span>
+                        <span class="txt">
+                            <strong>{{ card.nome }}</strong>
+                            <span>{{ card.descricao }}</span>
+                        </span>
+                        <i class="bi bi-arrow-right ms-auto text-secondary"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- ===================== SERVICOS ===================== -->
+    <section class="secao secao-alt" id="servicos">
+        <div class="container">
+            <div class="mb-4">
+                <h2 class="secao-titulo">Serviços</h2>
+                <p class="secao-desc mb-0">
+                    Além das aplicações, atendo projetos que precisam transformar dado
+                    público em produto — do banco à tela.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-md-4">
+                    <div class="card-servico">
+                        <div class="icone"><i class="bi bi-database-gear"></i></div>
+                        <h3>Dados públicos sob medida</h3>
+                        <p>
+                            Carga, tratamento e cruzamento de bases abertas (Receita
+                            Federal, Correios, IBGE) com pipeline reproduzível e
+                            qualidade medida.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card-servico">
+                        <div class="icone"><i class="bi bi-code-slash"></i></div>
+                        <h3>Desenvolvimento web (Django)</h3>
+                        <p>
+                            Aplicações em Django com Postgres, busca paginada em bases
+                            grandes, autenticação e deploy em VPS com HTTPS e backup.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card-servico">
+                        <div class="icone"><i class="bi bi-hdd-network"></i></div>
+                        <h3>Integração com IBM i / DB2</h3>
+                        <p>
+                            Acesso a bases legadas em AS/400 via JDBC, APIs e telas
+                            modernas sobre o que já existe — sem reescrever o sistema.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FAIXA PORTFOLIO ===================== -->
+    <section class="secao">
+        <div class="container">
+            <div class="faixa-portfolio">
+                <div class="row align-items-center g-4">
+                    <div class="col-12 col-lg-7">
+                        <h2 class="mb-2">Estas aplicações são um portfólio ao vivo</h2>
+                        <p class="mb-3">
+                            Stack, decisões técnicas, telas e o código de cada projeto
+                            estão documentados no portfólio — incluindo este site.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for tech in tecnologias|slice:":6" %}
+                            <span class="tech">{{ tech.nome }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5 text-lg-end">
+                        <a class="btn btn-acao px-4 py-2" href="{{ portfolio_url }}"
+                           target="_blank" rel="noopener">
+                            Ver o portfólio completo <i class="bi bi-arrow-up-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER / CONTATO ===================== -->
+    <!--
+      Contato: hoje so' GitHub (canal real). Para publicar e-mail e/ou
+      WhatsApp, acrescente um <li> aqui — nao existe endereco de e-mail
+      do dominio criado ainda.
+    -->
+    <footer class="rodape" id="contato">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-12 col-md-5">
+                    <p class="marca-rodape fs-5 mb-2">
+                        <i class="bi bi-building me-1"></i>busquecnpj
+                    </p>
+                    <p class="mb-0">
+                        Consulta de empresas sobre os dados públicos da Receita
+                        Federal, com busca por proximidade e chat com IA.
+                    </p>
+                </div>
+                <div class="col-12 col-md-3">
+                    <p class="rotulo mb-2">Contato</p>
+                    <ul class="list-unstyled mb-0 d-grid gap-1">
+                        <li>
+                            <a href="https://github.com/antoniorosasse" target="_blank" rel="noopener">
+                                <i class="bi bi-github me-1"></i>github.com/antoniorosasse
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ portfolio_url }}" target="_blank" rel="noopener">
+                                <i class="bi bi-person-badge me-1"></i>Portfólio
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-12 col-md-4">
+                    <p class="rotulo mb-2">Sistemas</p>
+                    <ul class="list-unstyled mb-0 d-grid gap-1">
+                        {% for card in cards_destaque %}
+                        <li>
+                            <a href="{{ card.url }}" target="_blank" rel="noopener">
+                                <i class="{{ card.icon }} me-1"></i>{{ card.nome }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="d-flex flex-wrap justify-content-between gap-2 small">
+                <span>Versão {{ versao }} · {{ ambiente }}</span>
+                <span>Dados públicos · Lei de Acesso à Informação</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
