@@ -1,0 +1,23 @@
+{% comment %}
+  Aplica o tema antes do CSS carregar (evita o flash claro->escuro).
+  Incluido no <head> da landing, do menu e do detalhe de projeto.
+
+  Chave: 'sistema-tema' (mesma do cnpj_interface/as400_interface);
+  'menu-theme' fica como fallback legado;
+  ?tema=dark|light forca o tema (teste e captura de tela).
+{% endcomment %}
+<script>
+(function () {
+    var CHAVE = 'sistema-tema';
+    var LEGADO = 'menu-theme';
+    var q = new URLSearchParams(window.location.search).get('tema');
+    var t = (q === 'dark' || q === 'light')
+        ? q
+        : (localStorage.getItem(CHAVE) || localStorage.getItem(LEGADO));
+    if (t !== 'dark' && t !== 'light') {
+        t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-bs-theme', t);
+})();
+</script>

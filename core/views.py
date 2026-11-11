@@ -57,10 +57,37 @@ PORTFOLIO_URL = os.getenv('PORTFOLIO_URL', 'https://arosasse.tec.br').rstrip('/'
 # ============================================================
 # LANDING COMERCIAL (busquecnpj.com.br)
 # ============================================================
-# Ids dos cards de _montar_contexto usados em cada bloco da landing.
-# Mexer aqui nao mexe no menu/portfolio.
-CARDS_LANDING_DESTAQUE = ('cnpj', 'chat_empresas', 'proximidade')
-CARDS_LANDING_SECUNDARIOS = ('estatisticas', 'as400', 'chat_pessoas')
+# Ids dos projetos de _montar_contexto que a landing apresenta, na ordem
+# em que aparecem. A landing NAO e' o portfolio: ela mostra o sistema em
+# uma frase, para quem quer contratar. Destaques tecnicos, stack e telas
+# continuam so' no menu (/menu/).
+SOLUCOES_LANDING = ('cnpj', 'chat_empresas', 'proximidade', 'estatisticas')
+
+# Versao comercial da descricao de cada solucao: sem jargao (keyset,
+# RAG, CTE, pgvector...). O texto tecnico do card fica intacto no
+# portfolio; aqui trocamos so' a frase de apresentacao.
+TEXTOS_LANDING = {
+    'cnpj': (
+        'Consulte qualquer uma das 38,5 milhões de empresas da Receita '
+        'Federal por nome, ramo de atividade, cidade ou situação cadastral, '
+        'com endereço e sócios de cada uma.'
+    ),
+    'chat_empresas': (
+        'Pergunte em português e receba a resposta pronta: a IA busca as '
+        'empresas na base, confere os números e responde apenas com o que '
+        'está registrado.'
+    ),
+    'proximidade': (
+        'Encontre estabelecimentos num raio de até 100 km a partir de um '
+        'CNPJ, CEP, cidade ou coordenada, com a distância em km de cada '
+        'resultado.'
+    ),
+    'estatisticas': (
+        'Os totais da base prontos para consultar: quantas empresas estão '
+        'ativas, quantas são do Simples/MEI, ranking de estados, porte, '
+        'natureza jurídica e ramo de atividade.'
+    ),
+}
 
 
 # ============================================================
@@ -634,6 +661,17 @@ def _montar_contexto(request):
         'projetos': projetos,
         'secoes': secoes,
         'tecnologias': tecnologias,
+        # Barra comum (core/templates/core/_topbar.html): os mesmos 4 apps
+        # que aparecem no menu do cnpj_interface, apontando para as URLs
+        # deste ambiente (dev: :8002, prod: subdominios). "Entrar" leva ao
+        # login de LA - a sessao do cnpj_interface nao vale neste site.
+        'nav_apps': [
+            {'nome': 'Empresas', 'icon': 'bi-building', 'url': urls['cnpj']},
+            {'nome': 'Proximidade', 'icon': 'bi-geo-alt', 'url': urls['proximidade']},
+            {'nome': 'Estatísticas', 'icon': 'bi-bar-chart', 'url': urls['estatisticas']},
+            {'nome': 'Chat IA', 'icon': 'bi-chat-dots', 'url': urls['chat_emp']},
+        ],
+        'login_url': f'{cnpj_base}/accounts/login/',
         'repos_sem_card': [
             {'nome': 'ProjetoCargaDados', 'descricao': 'ETL em linha de comando: Parquet da Receita Federal -> Postgres/Mongo, e PESSOAS no DB2', 'url': 'https://github.com/antoniorosasse/ProjetoCargaDados'},
         ],
@@ -667,16 +705,29 @@ def landing_comercial(request):
     Landing do site comercial (busquecnpj.com.br).
 
     Reusa _montar_contexto para herdar as URLs dos apps (dev: :8001/:8002,
-    prod: subdominios) e o health check com cache de 60s. Os cards que
-    aparecem em cada bloco saem de CARDS_LANDING_DESTAQUE/SECUNDARIOS.
+    prod: subdominios) e o health check com cache de 60s. As solucoes
+    apresentadas saem de SOLUCOES_LANDING, com a descricao comercial de
+    TEXTOS_LANDING (o texto tecnico fica no portfolio).
+
+    A copia com {**projeto} evita sobrescrever o dict original: o mesmo
+    objeto e' usado pelo menu.
     """
     context = _montar_contexto(request)
     por_id = {p['id']: p for p in context['projetos']}
 
-    context['cards_destaque'] = [por_id[i] for i in CARDS_LANDING_DESTAQUE if i in por_id]
-    context['cards_secundarios'] = [por_id[i] for i in CARDS_LANDING_SECUNDARIOS if i in por_id]
-    context['todos_online'] = bool(context['cards_destaque']) and all(
-        c['status_cor'] == 'success' for c in context['cards_destaque']
+    solucoes = []
+    for solucao_id in SOLUCOES_LANDING:
+        projeto = por_id.get(solucao_id)
+        if projeto is None:
+            continue
+        solucoes.append({
+            **projeto,
+            'descricao': TEXTOS_LANDING.get(solucao_id, projeto['descricao']),
+        })
+
+    context['solucoes'] = solucoes
+    context['todos_online'] = bool(solucoes) and all(
+        s['status_cor'] == 'success' for s in solucoes
     )
 
     return render(request, 'core/landing.html', context)

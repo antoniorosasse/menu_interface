@@ -8,9 +8,11 @@ from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils.html import escape
 
 from core.views import (
-    CARDS_LANDING_DESTAQUE,
+    SOLUCOES_LANDING,
+    TEXTOS_LANDING,
     FONTES_CEP,
     FONTES_EMPRESAS,
     FONTES_IBGE,
@@ -176,7 +178,7 @@ class HomePorHostTests(TestCase):
                 resp = self.client.get('/', HTTP_HOST=host)
                 self.assertEqual(resp.status_code, 200)
                 self.assertTemplateUsed(resp, 'core/landing.html')
-                self.assertContains(resp, 'O que está no ar')
+                self.assertContains(resp, 'class="solucao-nome"')
                 # nada do menu/portfolio vaza para o site comercial
                 self.assertNotContains(resp, 'Tecnologias usadas nos projetos')
 
@@ -186,20 +188,67 @@ class HomePorHostTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'core/menu.html')
         self.assertContains(resp, 'Tecnologias usadas nos projetos')
-        self.assertNotContains(resp, 'O que está no ar')
+        self.assertNotContains(resp, 'class="solucao-nome"')
 
-    def test_preview_da_landing_em_site_e_os_tres_produtos(self):
+    def test_preview_da_landing_em_site_e_as_quatro_solucoes(self):
         """'/site/' mostra a landing em qualquer host (util no runserver)."""
         resp = self.client.get(reverse('core:landing'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'core/landing.html')
 
-        ids = [card['id'] for card in resp.context['cards_destaque']]
-        self.assertEqual(ids, list(CARDS_LANDING_DESTAQUE))
+        ids = [s['id'] for s in resp.context['solucoes']]
+        self.assertEqual(ids, list(SOLUCOES_LANDING))
+
         html = resp.content.decode()
-        for card in resp.context['cards_destaque']:
-            with self.subTest(produto=card['id']):
-                self.assertIn(card['url'], html)
+        for solucao in resp.context['solucoes']:
+            with self.subTest(solucao=solucao['id']):
+                # nome e descricao sao os mesmos textos dos cards do portfolio
+                self.assertIn(escape(solucao['nome']), html)
+                self.assertIn(escape(solucao['descricao']), html)
+                # e cada um tem o link para abrir a aplicacao
+                self.assertIn(f'href="{solucao["url"]}"', html)
+
+    def test_landing_apresenta_quatro_paragrafos_com_link(self):
+        """A secao Solucoes e' texto puro: nome, frase e link. Sem card.
+
+        Nada de destaques tecnicos, pilulas de stack, selo de status nem a
+        faixa do portfolio - isso e' conteudo do portfolio (core/menu.html).
+        IBM i e o chat de pessoas tambem nao entram: nao sao solucao
+        comercial.
+        """
+        resp = self.client.get(reverse('core:landing'))
+        html = resp.content.decode()
+
+        self.assertEqual(html.count('class="solucao-nome"'), len(resp.context['solucoes']))
+        self.assertEqual(html.count('Abrir a aplicação'), len(resp.context['solucoes']))
+
+        for resto in ('card-produto', 'item-secundario', 'cards_secundarios',
+                      'lista-destaques', 'pilula', 'status-mini',
+                      'faixa-portfolio', 'O que está no ar'):
+            with self.subTest(resto=resto):
+                self.assertNotIn(resto, html)
+        self.assertNotIn('IBM i · DB2 · Pessoas', html)
+        self.assertNotIn('Chat com IA · Pessoas', html)
+
+    def test_landing_usa_texto_comercial_e_o_portfolio_mantem_o_tecnico(self):
+        """Cada pagina fala com o seu publico.
+
+        A landing apresenta em uma frase (TEXTOS_LANDING, sem jargao); o
+        portfolio continua com os destaques tecnicos. E o dict do projeto
+        nao pode ser mutado no caminho, senao o menu perderia o texto dele.
+        """
+        landing = self.client.get(reverse('core:landing')).content.decode()
+        for solucao_id, texto in TEXTOS_LANDING.items():
+            with self.subTest(solucao=solucao_id):
+                self.assertIn(escape(texto), landing)
+
+        for jargao in ('keyset pagination', 'Pipeline RAG', 'pgvector',
+                       'validação em 4 camadas'):
+            with self.subTest(jargao=jargao):
+                self.assertNotIn(jargao, landing)
+
+        portfolio = self.client.get(reverse('core:menu')).content.decode()
+        self.assertIn('keyset pagination', portfolio)
 
     def test_canonical_e_cta_do_portfolio_seguem_o_dot_env(self):
         """Trocar PORTFOLIO_URL no .env muda o site sem mexer em codigo."""
@@ -208,4 +257,63 @@ class HomePorHostTests(TestCase):
 
         landing = self.client.get(reverse('core:landing'))
         self.assertContains(landing, f'href="{PORTFOLIO_URL}"')
+
+    def test_preview_do_menu_em_menu(self):
+        """'/menu/' mostra o portfolio em qualquer host (espelho do /site/)."""
+        resp = self.client.get('/menu/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'core/menu.html')
+
+
+class BarraComumTests(TestCase):
+    """A barra core/_topbar.html e identica na landing, no menu e no detalhe.
+
+    Ela traz os mesmos 4 apps do menu do cnpj_interface (Empresas,
+    Proximidade, Estatisticas, Chat IA) + Entrar. O nome do usuario e o
+    item "Usuarios" ficam so no cnpj_interface: a sessao de la nao vale
+    neste site (outro SECRET_KEY, outro banco), entao aqui nao ha o que
+    mostrar.
+    """
+
+    def setUp(self):
+        p = patch('core.views._check_health_deep_cached', return_value=SAUDE_OK)
+        p.start()
+        self.addCleanup(p.stop)
+
+    def test_landing_tem_os_quatro_apps_o_login_e_as_ancoras(self):
+        resp = self.client.get(reverse('core:landing'))
+        html = resp.content.decode()
+
+        for app in resp.context['nav_apps']:
+            with self.subTest(app=app['nome']):
+                self.assertIn(app['nome'], html)
+                self.assertIn(f'href="{app["url"]}"', html)
+
+        self.assertIn(f'href="{resp.context["login_url"]}"', html)
+        self.assertIn('>Entrar<', html)
+
+        # a landing e' de uma pagina so: as ancoras continuam la
+        for ancora in ('#solucoes', '#servicos', '#contato'):
+            self.assertIn(f'href="{ancora}"', html)
+
+    def test_menu_e_detalhe_usam_a_mesma_barra(self):
+        for url in (reverse('core:menu'),
+                    reverse('core:detalhe_projeto', args=['cnpj'])):
+            with self.subTest(url=url):
+                resp = self.client.get(url)
+                self.assertEqual(resp.status_code, 200)
+                self.assertTemplateUsed(resp, 'core/_topbar.html')
+                self.assertContains(resp, 'id="siteTema"')
+                self.assertContains(resp, 'js/tema.js')
+
+    def test_tema_usa_a_chave_unica_e_le_a_antiga(self):
+        """'sistema-tema' e' a chave do sistema; 'menu-theme' so como fallback."""
+        for url in (reverse('core:landing'), reverse('core:menu')):
+            with self.subTest(url=url):
+                html = self.client.get(url).content.decode()
+                self.assertIn('sistema-tema', html)
+                self.assertIn('menu-theme', html)
+                self.assertIn('data-bs-theme', html)
+                self.assertIn('css/site.css', html)
+
 

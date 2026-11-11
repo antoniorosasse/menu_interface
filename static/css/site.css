@@ -1,0 +1,180 @@
+/* ============================================================
+   site.css - base visual comum as paginas do menu_interface
+   ------------------------------------------------------------
+   Um lugar so para: variaveis de tema (claro/escuro) e a barra de
+   navegacao usada na landing comercial, no menu e no detalhe de
+   projeto. Antes cada template repetia o proprio :root.
+
+   O tema vem de dois atributos no <html>:
+     data-theme     -> nossos estilos (este arquivo)
+     data-bs-theme  -> componentes do Bootstrap 5.3
+
+   A chave do localStorage e' 'sistema-tema' - a mesma do
+   cnpj_interface e do as400_interface. O js/tema.js ainda le
+   'menu-theme' como fallback, para nao perder a preferencia de quem
+   ja tinha usado a versao antiga do site.
+   ============================================================ */
+
+:root {
+    /* marca (nao muda com o tema: e' cor de fundo do hero/faixa) */
+    --brand-dark: #0b2545;
+    --brand: #13315c;
+    --brand-soft: #eef2f8;
+    --accent: #16a34a;
+    --accent-dark: #12813b;
+
+    /* cor de titulo: no tema escuro fica clara (--brand-* continua azul) */
+    --titulo: #0b2545;
+
+    /* superficies e texto */
+    --bg-1: #f5f7fa;
+    --bg-2: #c3cfe2;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #5b6b82;
+    --divider: #e2e8f0;
+
+    /* aliases usados pelo menu e pelo detalhe de projeto */
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --header-text: #0f172a;
+    --badge-bg: #f1f5f9;
+    --badge-text: #475569;
+
+    /* sombras */
+    --shadow: 0 2px 12px rgba(15, 23, 42, 0.07);
+    --shadow-hover: 0 18px 38px rgba(15, 23, 42, 0.16);
+    --card-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+    --card-shadow-hover: 0 20px 40px rgba(15, 23, 42, 0.15);
+
+    /* barra */
+    --topbar-bg: rgba(255, 255, 255, 0.94);
+}
+
+[data-theme="dark"] {
+    --brand-soft: #1c2f4d;
+    --titulo: #e8f0fb;
+
+    --bg-1: #0f172a;
+    --bg-2: #111c30;
+    --surface: #16233a;
+    --border: #2b3b55;
+    --text: #f1f5f9;
+    --text-muted: #a3b3c7;
+    --divider: #2b3b55;
+
+    --card-bg: #16233a;
+    --card-border: #2b3b55;
+    --header-text: #f8fafc;
+    --badge-bg: #27374f;
+    --badge-text: #cbd5e1;
+
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 18px 38px rgba(0, 0, 0, 0.55);
+    --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.5);
+
+    /* barra */
+    --topbar-bg: rgba(17, 26, 42, 0.94);
+}
+
+/* ============================================================
+   BARRA DE NAVEGACAO (landing, menu e detalhe de projeto)
+   ============================================================ */
+.site-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: var(--topbar-bg);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+}
+
+.site-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.55rem 0;
+    flex-wrap: wrap;
+}
+
+.site-marca {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    color: var(--titulo);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.site-marca i { color: var(--accent); }
+.site-marca:hover { color: var(--brand); }
+[data-theme="dark"] .site-marca:hover { color: var(--text); }
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    flex-wrap: wrap;
+}
+
+.site-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.93rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+.site-link i { margin-right: 0.15rem; }
+.site-link:hover,
+.site-link:focus-visible {
+    color: var(--titulo);
+    background: var(--brand-soft);
+}
+
+.site-link.site-entrar {
+    border: 1px solid var(--border);
+    color: var(--titulo);
+    font-weight: 600;
+}
+
+.site-toggle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.05rem;
+    transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.site-toggle:hover {
+    transform: rotate(15deg) scale(1.06);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+@media (max-width: 575.98px) {
+    .site-link { padding: 0.3rem 0.4rem; font-size: 0.85rem; }
+    .site-toggle { width: 34px; height: 34px; }
+}
+
+/* ============================================================
+   AJUSTES DO TEMA ESCURO NA LANDING
+   A landing foi escrita para fundo claro; aqui so corrigimos as
+   cores que eram fixas (icones de servico, nota de demo).
+   ============================================================ */
+[data-theme="dark"] .card-servico .icone {
+    background: linear-gradient(135deg, #173a2b, #14301f);
+}
+
+[data-theme="dark"] .nota-demo code {
+    color: #c7d8ee;
+}

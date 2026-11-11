@@ -1,0 +1,37 @@
+{% comment %}
+  Barra de navegacao comum as tres paginas do site.
+  Uso (variaveis passadas no include, todas opcionais):
+    {% include 'core/_topbar.html' with marca='busquecnpj' icone_marca='bi-building' ancoras=True %}
+
+  Vem do contexto (_montar_contexto em views.py):
+    nav_apps  -> os 4 apps do sistema (Empresas, Proximidade, Estatisticas, Chat IA)
+    login_url -> /accounts/login/ do cnpj_interface (sessao de la, nao deste site)
+{% endcomment %}
+<nav class="site-topbar">
+    <div class="container site-inner">
+        <a class="site-marca" href="{{ home_url|default:'/' }}">
+            <i class="bi {{ icone_marca|default:'bi-building' }} me-1"></i>{{ marca|default:'busquecnpj' }}
+        </a>
+        <div class="site-nav">
+            {% if ancoras %}
+            <a class="site-link d-none d-md-inline" href="#solucoes">Soluções</a>
+            <a class="site-link d-none d-md-inline" href="#servicos">Serviços</a>
+            <a class="site-link d-none d-md-inline" href="#contato">Contato</a>
+            {% endif %}
+            {% for app in nav_apps %}
+            <a class="site-link" href="{{ app.url }}" target="_blank" rel="noopener"
+               title="{{ app.nome }} — abre em nova aba">
+                <i class="bi {{ app.icon }}"></i><span class="d-none d-lg-inline ms-1">{{ app.nome }}</span>
+            </a>
+            {% endfor %}
+            <a class="site-link site-entrar" href="{{ login_url }}" target="_blank" rel="noopener"
+               title="Entrar no sistema — abre em nova aba">
+                <i class="bi bi-box-arrow-in-right"></i><span class="d-none d-sm-inline ms-1">Entrar</span>
+            </a>
+            <button type="button" class="site-toggle" id="siteTema"
+                    aria-label="Alternar tema claro/escuro" title="Alternar tema">
+                <i class="bi bi-moon-stars" id="siteTemaIcone"></i>
+            </button>
+        </div>
+    </div>
+</nav>
