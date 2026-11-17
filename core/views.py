@@ -541,7 +541,8 @@ def _montar_contexto(request):
         {
             'id': 'as400',
             'titulo': 'Outros projetos em produção (IBM i · DB2)',
-            'descricao': 'CRUD e chat com IA sobre uma tabela DB2 hospedada num IBM i remoto, acessado por JDBC.',
+            'descricao': 'CRUD e chat com IA sobre uma tabela DB2 hospedada num IBM i remoto, acessado por JDBC. '
+                         'Base de demonstração: os CPFs não foram conferidos na Receita Federal.',
             'classe_grid': 'row-cols-1 row-cols-md-2',
             'compacto': True,
             'projetos': [p for p in projetos if p.get('secao') == 'as400'],
