@@ -670,15 +670,20 @@ def _montar_contexto(request):
         'tecnologias': tecnologias,
         # Barra comum (core/templates/core/_topbar.html): os mesmos 4 apps
         # que aparecem no menu do cnpj_interface, apontando para as URLs
-        # deste ambiente (dev: :8002, prod: subdominios). "Entrar" leva ao
-        # login de LA - a sessao do cnpj_interface nao vale neste site.
+        # deste ambiente (dev: :8002, prod: subdominios).
         'nav_apps': [
             {'nome': 'Empresas', 'icon': 'bi-building', 'url': urls['cnpj']},
             {'nome': 'Proximidade', 'icon': 'bi-geo-alt', 'url': urls['proximidade']},
             {'nome': 'Estatísticas', 'icon': 'bi-bar-chart', 'url': urls['estatisticas']},
             {'nome': 'Chat IA', 'icon': 'bi-chat-dots', 'url': urls['chat_emp']},
         ],
-        'login_url': f'{cnpj_base}/accounts/login/',
+        # "Entrar" leva ao CHAT do cnpj_interface (rota protegida): deslogado
+        # pede a senha e volta para la' (next=/chat/); logado entra direto.
+        # Nao apontar para /accounts/login/: como o login redireciona para a
+        # pagina inicial do produto, quem ja estava logado clicava em Entrar e
+        # voltava para esta propria landing (parecia que o site nao reconhecia
+        # o usuario). A sessao e' do cnpj_interface, nao deste site.
+        'login_url': f'{cnpj_base}/chat/',
         'repos_sem_card': [
             {'nome': 'ProjetoCargaDados', 'descricao': 'ETL em linha de comando: Parquet da Receita Federal -> Postgres/Mongo, e PESSOAS no DB2', 'url': 'https://github.com/antoniorosasse/ProjetoCargaDados'},
         ],

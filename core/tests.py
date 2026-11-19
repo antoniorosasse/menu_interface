@@ -292,6 +292,12 @@ class BarraComumTests(TestCase):
         self.assertIn(f'href="{resp.context["login_url"]}"', html)
         self.assertIn('>Entrar<', html)
 
+        # "Entrar" leva ao chat do cnpj (rota protegida): com o login
+        # devolvendo para a pagina inicial do produto, /accounts/login/ fazia
+        # o usuario ja' logado voltar para esta landing sem pedir senha.
+        self.assertTrue(resp.context['login_url'].endswith('/chat/'))
+        self.assertNotIn('/accounts/login/', html)
+
         # a landing e' de uma pagina so: as ancoras continuam la
         for ancora in ('#solucoes', '#servicos', '#contato'):
             self.assertIn(f'href="{ancora}"', html)
