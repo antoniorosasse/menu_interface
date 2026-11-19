@@ -53,6 +53,12 @@ HOSTS_COMERCIAL = _hosts_env(
 )
 PORTFOLIO_URL = os.getenv('PORTFOLIO_URL', 'https://arosasse.tec.br').rstrip('/')
 
+# Pagina inicial do produto (landing comercial). Em producao e' o dominio raiz;
+# no dev a landing e' servida em /site/ pelo runserver da porta 8000 (o
+# portfolio fica em /menu/ quando HOSTS_COMERCIAL inclui o host). LANDING_URL
+# no .env aponta para outro host sem mexer no codigo.
+LANDING_URL = os.getenv('LANDING_URL', '').rstrip('/')
+
 
 # ============================================================
 # LANDING COMERCIAL (busquecnpj.com.br)
@@ -68,7 +74,7 @@ SOLUCOES_LANDING = ('cnpj', 'chat_empresas', 'proximidade', 'estatisticas')
 # portfolio; aqui trocamos so' a frase de apresentacao.
 TEXTOS_LANDING = {
     'cnpj': (
-        'Consulte qualquer uma das 38,5 milhões de empresas da Receita '
+        'Consulte qualquer uma das 74,4 milhões de empresas da Receita '
         'Federal por nome, ramo de atividade, cidade ou situação cadastral, '
         'com endereço e sócios de cada uma.'
     ),
@@ -106,7 +112,7 @@ FONTES_RFB = [
         'curto': 'Receita Federal',
         'nome': 'Receita Federal · dados.gov.br',
         'url': 'https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj',
-        'obs': 'Base pública do CNPJ: 38,5M de estabelecimentos, sócios, CNAE e natureza jurídica',
+        'obs': 'Base pública do CNPJ: 74,4M de estabelecimentos, sócios, CNAE e natureza jurídica',
     },
     {
         'curto': 'Base dos Dados',
@@ -347,7 +353,7 @@ def _montar_contexto(request):
             'id': 'cnpj',
             'secao': 'cnpj',
             'nome': 'Consulta Empresas · Receita Federal',
-            'descricao': 'Consulta de CNPJ sobre a base pública da RFB (38,5 milhões de estabelecimentos) com filtros, keyset pagination e estatísticas.',
+            'descricao': 'Consulta de CNPJ sobre a base pública da RFB (74,4 milhões de estabelecimentos) com filtros, keyset pagination e estatísticas.',
             'url': urls['cnpj'],
             'repo': 'https://github.com/antoniorosasse/cnpj_interface',
             'icon': 'bi bi-building',
@@ -355,7 +361,7 @@ def _montar_contexto(request):
             'imagem': 'cnpj/consulta-filtros.png',
             'stack': ['Django 6.1', 'PostgreSQL 15', 'psycopg2 (SQL puro)', 'Keyset pagination'],
             'destaques': [
-                '38,5M de linhas com keyset pagination (nenhum OFFSET no código)',
+                '74,4M de linhas com keyset pagination (nenhum OFFSET no código)',
                 'Índices parciais (WHERE cd_matriz_filial = 1) e CTE MATERIALIZED',
                 'Estatísticas pré-agregadas em c_estatisticas_totais (<5 ms)',
                 'Filtro por cidade com semi-join (cnpj_basico IN ...) em 0,3 s',
@@ -422,7 +428,7 @@ def _montar_contexto(request):
             'id': 'estatisticas',
             'secao': 'cnpj',
             'nome': 'Estatísticas da base',
-            'descricao': 'Totais pré-agregados de 38,5 milhões de estabelecimentos: situação, Simples/MEI, Top 10 UFs, porte, natureza jurídica e CNAE.',
+            'descricao': 'Totais pré-agregados da base (74,4 milhões de estabelecimentos): situação, Simples/MEI, Top 10 UFs, porte, natureza jurídica e CNAE.',
             'url': urls['estatisticas'],
             'repo': 'https://github.com/antoniorosasse/cnpj_interface',
             'icon': 'bi bi-bar-chart-line',
@@ -432,7 +438,7 @@ def _montar_contexto(request):
             'sem_status': True,
             'stack': ['Django 6.1', 'PostgreSQL 15', 'c_estatisticas_totais', '<5 ms por consulta'],
             'destaques': [
-                'Lê a tabela pré-agregada c_estatisticas_totais em menos de 5 ms (sem COUNT(*) na base de 38,5M)',
+                'Lê a tabela pré-agregada c_estatisticas_totais em menos de 5 ms (sem COUNT(*) na base de 74,4M)',
                 'Top 10 UFs, situação, porte, natureza jurídica e CNAE com percentual',
                 'Recálculo do agregado sob demanda (/estatisticas/recalcular/)',
                 'Mostra a data da última atualização de cada total',
@@ -569,7 +575,7 @@ def _montar_contexto(request):
         },
         {
             'nome': 'PostgreSQL 15',
-            'desc': 'Banco da base da Receita Federal: 38,5 milhões de estabelecimentos, '
+            'desc': 'Banco da base da Receita Federal: 74,4 milhões de estabelecimentos, '
                     '28 índices e CTEs materializadas para as estatísticas.',
             'doc': 'https://www.postgresql.org/docs/15/',
         },
@@ -682,6 +688,12 @@ def _montar_contexto(request):
         'is_local': is_local,
         'host_atual': host_completo,
         'portfolio_url': PORTFOLIO_URL,
+        # Barra do portfolio: link "Inicio" para a pagina inicial do produto
+        # (landing). Em dev o runserver da landing fica na porta 8000.
+        'landing_url': LANDING_URL or (
+            f'http://{host_sem_porta}:8000/site/' if is_local
+            else 'https://busquecnpj.com.br/'
+        ),
     }
 
 

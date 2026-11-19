@@ -6,6 +6,9 @@
   Vem do contexto (_montar_contexto em views.py):
     nav_apps  -> os 4 apps do sistema (Empresas, Proximidade, Estatisticas, Chat IA)
     login_url -> /accounts/login/ do cnpj_interface (sessao de la, nao deste site)
+
+  inicio_url (opcional, passado no include): pagina inicial do produto
+  (landing). Usado no portfolio e no detalhe de projeto, que nao sao a home.
 {% endcomment %}
 <nav class="site-topbar">
     <div class="container site-inner">
@@ -13,6 +16,13 @@
             <i class="bi {{ icone_marca|default:'bi-building' }} me-1"></i>{{ marca|default:'busquecnpj' }}
         </a>
         <div class="site-nav">
+            {% if inicio_url %}
+            {# Portfolio/detalhe: volta para a pagina inicial do produto. #}
+            <a class="site-link" href="{{ inicio_url }}"
+               title="Página inicial do busquecnpj (site do produto)">
+                <i class="bi bi-house-door"></i><span class="d-none d-lg-inline ms-1">Início</span>
+            </a>
+            {% endif %}
             {% if ancoras %}
             <a class="site-link d-none d-md-inline" href="#solucoes">Soluções</a>
             <a class="site-link d-none d-md-inline" href="#servicos">Serviços</a>
