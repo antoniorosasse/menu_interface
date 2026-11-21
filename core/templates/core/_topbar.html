@@ -1,48 +1,90 @@
 {% comment %}
-  Barra corporativa comum as tres paginas do site (mesmo desenho do
-  cnpj_interface/as400_interface). Uso (variaveis passadas no include,
-  todas opcionais):
-    include 'core/_topbar.html' with marca='busquecnpj' ancoras=True
+  Barra comum as paginas do site, no desenho do portal (portal.css).
+  Uso: variaveis passadas no include, todas opcionais:
+    include 'core/_topbar.html' with marca='Antonio Rosasse'
+                                    tagline='Portfolio - projetos em producao'
+                                    marca_icone='bi-buildings'
+                                    inicio_url=landing_url
+                                    ancoras_portfolio=True
 
   Vem do contexto (_montar_contexto em views.py):
     nav_apps  -> os 4 apps do sistema (Empresas, Proximidade, Estatisticas, Chat IA)
-    login_url -> /accounts/login/ do cnpj_interface (sessao de la, nao deste site)
+    login_url -> /chat/ do cnpj_interface (sessao de la, nao deste site)
 
   inicio_url (opcional, passado no include): pagina inicial do produto
-  (landing). Usado no portfolio e no detalhe de projeto, que nao sao a home.
+  (landing, hoje no cnpj_interface em /site/).
+
+  ancoras=True e' a barra da landing comercial (ancoras #solucoes/#servicos/
+  #contato; a landing saiu do menu_interface, o conditional fica para nao
+  quebrar quem ainda renderiza esta barra noutro contexto).
+  ancoras_portfolio=True e' a barra do portfolio: as ancoras apontam para as
+  secoes reais da propria pagina (#projetos, #tecnologias).
+
+  Sem estas variaveis a barra fica so' com os apps, Entrar e o tema.
+  O id="siteTema" e o id="siteTemaIcone" sao o contrato do static/js/tema.js;
+  nao renomear.
 {% endcomment %}
-<nav class="site-topbar" aria-label="Navegação principal">
-    <div class="container site-inner">
-        <a class="site-marca" href="{{ home_url|default:'/' }}">
-            <span class="ui-brand-mark" aria-hidden="true"><span></span></span>{{ marca|default:'busquecnpj' }}
-        </a>
-        <div class="site-nav">
-            {% if inicio_url %}
-            {# Portfolio/detalhe: volta para a pagina inicial do produto. #}
-            <a class="site-link" href="{{ inicio_url }}"
-               title="Página inicial do busquecnpj (site do produto)">
-                <i class="bi bi-house-door"></i><span>Início</span>
+<header class="site-topbar ui-topbar">
+    <nav class="navbar navbar-expand-lg ui-navbar" aria-label="Navegação principal">
+        <div class="container site-inner ui-topbar__inner">
+            <a class="navbar-brand site-marca" href="{{ home_url|default:'/' }}"
+               title="Página inicial do portfólio">
+                <span class="ui-brand-mark" aria-hidden="true"><span></span>{% if marca_icone %}<i class="bi {{ marca_icone }}"></i>{% endif %}</span>
+                <span class="ui-brand-text">
+                    <span class="ui-brand-name">{{ marca|default:'busquecnpj' }}</span>
+                    {% if tagline %}<span class="ui-brand-tag">{{ tagline }}</span>{% endif %}
+                </span>
             </a>
-            {% endif %}
-            {% if ancoras %}
-            <a class="site-link d-none d-md-inline" href="#solucoes">Soluções</a>
-            <a class="site-link d-none d-md-inline" href="#servicos">Serviços</a>
-            <a class="site-link d-none d-md-inline" href="#contato">Contato</a>
-            {% endif %}
-            {% for app in nav_apps %}
-            <a class="site-link" href="{{ app.url }}" target="_blank" rel="noopener"
-               title="{{ app.nome }} — abre em nova aba">
-                <i class="bi {{ app.icon }}"></i><span>{{ app.nome }}</span>
-            </a>
-            {% endfor %}
-            <a class="site-link site-entrar" href="{{ login_url }}" target="_blank" rel="noopener"
-               title="Entrar no sistema — abre em nova aba">
-                <i class="bi bi-box-arrow-in-right"></i><span>Entrar</span>
-            </a>
-            <button type="button" class="site-toggle" id="siteTema"
-                    aria-label="Alternar tema claro/escuro" title="Alternar tema">
-                <i class="bi bi-moon-stars" id="siteTemaIcone"></i>
-            </button>
+
+            {% comment %}
+              Tema + toggler antes do collapse: no mobile os dois ficam na
+              primeira linha, ao lado da marca, e o menu abre embaixo. No
+              desktop o CSS (portal-menu.css) devolve o cluster para a direita.
+            {% endcomment %}
+            <div class="ui-topbar__actions">
+                <button type="button" class="site-toggle ui-theme-switch" id="siteTema"
+                        aria-label="Alternar tema claro/escuro" title="Alternar tema claro/escuro">
+                    <span class="ui-theme-knob"><i class="bi bi-moon-stars" id="siteTemaIcone" aria-hidden="true"></i></span>
+                </button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#siteNav" aria-controls="siteNav" aria-expanded="false"
+                        aria-label="Abrir menu de navegação">
+                    <span class="navbar-toggler-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="siteNav">
+                <div class="site-nav">
+                    {% if inicio_url %}
+                    {# Portfolio/detalhe: volta para a pagina inicial do produto. #}
+                    <a class="site-link ui-menu-link" href="{{ inicio_url }}"
+                       title="Página inicial do busquecnpj (site do produto)">
+                        <i class="bi bi-house-door"></i><span>Início</span>
+                    </a>
+                    {% endif %}
+                    {% if ancoras %}
+                    <a class="site-link ui-menu-link d-none d-md-inline-flex" href="#solucoes">Soluções</a>
+                    <a class="site-link ui-menu-link d-none d-md-inline-flex" href="#servicos">Serviços</a>
+                    <a class="site-link ui-menu-link d-none d-md-inline-flex" href="#contato">Contato</a>
+                    {% endif %}
+                    {% if ancoras_portfolio %}
+                    <a class="site-link ui-menu-link d-none d-xl-inline-flex" href="#projetos"
+                       title="Ir para os cards dos projetos">Projetos</a>
+                    <a class="site-link ui-menu-link d-none d-xl-inline-flex" href="#tecnologias"
+                       title="Ir para a faixa de tecnologias">Tecnologias</a>
+                    {% endif %}
+                    {% for app in nav_apps %}
+                    <a class="site-link ui-menu-link" href="{{ app.url }}" target="_blank" rel="noopener"
+                       title="{{ app.nome }} — abre em nova aba">
+                        <i class="bi {{ app.icon }}"></i><span>{{ app.nome }}</span>
+                    </a>
+                    {% endfor %}
+                    <a class="site-link site-entrar ui-login-link" href="{{ login_url }}" target="_blank" rel="noopener"
+                       title="Entrar no sistema — abre em nova aba">
+                        <i class="bi bi-box-arrow-in-right"></i><span>Entrar</span>
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+</header>

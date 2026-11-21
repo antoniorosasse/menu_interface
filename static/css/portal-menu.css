@@ -1,0 +1,1103 @@
+/* ============================================================
+   portal-menu.css - camada visual do portfolio do menu_interface
+   ------------------------------------------------------------
+   Carregado DEPOIS de portal.css (que ja' vem depois de site.css).
+   Escopo: paginas com class="pf-page" (core/menu.html e
+   core/projeto.html) e a barra comum .site-topbar. A landing nao
+   carrega este arquivo.
+
+   Tokens: --p-* do portal.css (a mesma paleta/tipografia do
+   cnpj_interface). Nada de cor/medida solta: se nao existe token,
+   usa-se a escala de raio/tipografia do portal. Sem !important.
+
+   Ordem das camadas nas paginas do portfolio:
+     bootstrap > bootstrap-icons > site.css > <style> do template
+     > portal.css > portal-menu.css
+   ============================================================ */
+
+/* ============================================================
+   1. PAGINA
+   ============================================================ */
+.pf-page {
+    min-height: 100vh;
+}
+
+.pf-page main.ui-main {
+    padding-block: clamp(1.25rem, 2.4vw, 2rem) clamp(2rem, 4vw, 3rem);
+}
+
+/* ============================================================
+   2. TOPBAR - desenho do portal sobre a estrutura .site-topbar
+   (site.css define .site-topbar/.site-link; aqui a barra assume
+   o visual do .ui-topbar do portal: 66px, fundo translucido,
+   abas em pílula e marca em gradiente)
+   ============================================================ */
+.site-topbar {
+    min-height: var(--p-topbar-h);
+    background: var(--p-topbar);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    backdrop-filter: saturate(160%) blur(14px);
+    border-bottom: 1px solid var(--p-line);
+}
+
+.site-topbar .ui-navbar {
+    min-height: var(--p-topbar-h);
+}
+
+.site-topbar .site-inner {
+    min-height: var(--p-topbar-h);
+    flex-wrap: wrap;
+    gap: clamp(0.4rem, 1.4vw, 1.1rem);
+}
+
+.site-topbar .site-marca {
+    gap: 0.65rem;
+    padding: 0.25rem 0;
+    color: var(--p-ink);
+    font-size: 1.05rem;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.site-topbar .site-marca:hover {
+    color: var(--p-ink);
+}
+
+.site-topbar .ui-brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    font-size: 1.02rem;
+}
+
+/* a marca antiga (landing) e' desenhada por pseudo-elementos do
+   interface-corporativa.css; no portfolio o simbolo e' o <i> */
+.site-topbar .ui-brand-mark > span {
+    display: none;
+}
+
+.site-topbar .site-marca .ui-brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* cluster de links: abas do portal */
+.site-topbar .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+/* site.css esconde o icone dos links corporativos; no portal ele aparece */
+.site-topbar .site-nav .site-link .bi {
+    display: inline-block;
+}
+
+/* site.css desenha um fio de 3px embaixo do link; a aba do portal nao usa */
+.site-topbar .site-link,
+.site-topbar .site-link:hover,
+.site-topbar .site-link:focus-visible,
+.site-topbar .site-link.site-entrar,
+.site-topbar .site-link.site-entrar:hover,
+.site-topbar .site-link.site-entrar:focus-visible {
+    border-bottom-color: transparent;
+}
+
+/* "Entrar" no desenho do portal (o .site-entrar antigo tinha peso/cor propria) */
+.site-topbar .site-link.site-entrar {
+    color: var(--p-accent);
+    font-weight: 650;
+}
+
+.site-topbar .site-link.site-entrar:hover,
+.site-topbar .site-link.site-entrar:focus-visible {
+    color: var(--p-accent-strong);
+}
+
+/* o switch de tema do portal fica no cluster da direita */
+.site-topbar .ui-topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.site-topbar .site-toggle {
+    width: 56px;
+    height: 30px;
+    border-radius: var(--p-r-pill);
+}
+
+/* No HTML o cluster do tema/toggler vem antes do collapse (para no mobile
+   ficar na primeira linha, ao lado da marca). No desktop a ordem visual
+   volta a ser marca > links > tema, como na barra do portal. */
+@media (min-width: 992px) {
+    .site-topbar .navbar-collapse {
+        order: 2;
+    }
+
+    .site-topbar .ui-topbar__actions {
+        order: 3;
+    }
+}
+
+/* ============================================================
+   3. HERO
+   ============================================================ */
+.pf-page .hero {
+    padding-block: clamp(1.5rem, 3.5vw, 2.75rem) clamp(1.35rem, 3vw, 2.25rem);
+    border-bottom: 1px solid var(--p-line);
+}
+
+.pf-page .hero .ui-eyebrow {
+    margin-bottom: 0.45rem;
+    color: var(--p-accent);
+}
+
+.pf-page .hero .ui-eyebrow .bi {
+    margin-right: 0.35rem;
+}
+
+.pf-page .hero .hero-title {
+    margin: 0 0 0.4rem;
+    color: var(--p-ink);
+    font-size: clamp(2.1rem, 4.8vw, 3.35rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+}
+
+.pf-page .hero .hero-subtitle {
+    max-width: 64ch;
+    margin: 0 0 1.1rem;
+    color: var(--p-muted);
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    line-height: 1.5;
+}
+
+.pf-page .hero-meta {
+    gap: 0.4rem;
+    margin-bottom: 1.35rem;
+}
+
+.pf-page .hero-meta .badge {
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+}
+
+.pf-page .hero-demo-note {
+    max-width: 84ch;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--p-line);
+    border-left: 3px solid var(--p-accent);
+    border-radius: var(--p-r-md);
+    background: var(--p-surface);
+    box-shadow: var(--p-shadow-1);
+    color: var(--p-ink-soft);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.pf-page .hero-demo-note strong {
+    color: var(--p-ink);
+}
+
+.pf-page .hero-demo-note code {
+    white-space: nowrap;
+}
+
+.pf-page .hero-alerta {
+    max-width: 720px;
+    margin: 1.25rem 0 0;
+}
+
+/* ============================================================
+   4. RESUMO - KPIs e status (dados reais do contexto)
+   ============================================================ */
+.pf-page .pf-resumo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.pf-page .pf-kpi__value--texto {
+    font-size: clamp(1rem, 0.9rem + 0.4vw, 1.2rem);
+    line-height: 1.25;
+}
+
+.pf-page .pf-status {
+    gap: 0.4rem 0.55rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-r-md);
+    background: var(--p-surface-2);
+}
+
+.pf-page .pf-status__rotulo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--p-muted);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.pf-page .pf-status__rotulo .bi {
+    color: var(--p-accent);
+    font-size: 0.85rem;
+}
+
+.pf-page .pf-status .badge {
+    gap: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+}
+
+.pf-page .pf-status .badge strong {
+    font-variant-numeric: tabular-nums;
+}
+
+.pf-page .pf-status__nota {
+    color: var(--p-muted);
+    font-size: 0.75rem;
+}
+
+/* ============================================================
+   5. SECOES
+   ============================================================ */
+.pf-page .ui-section {
+    margin-block: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+.pf-page .ui-section:first-of-type {
+    margin-top: 0;
+}
+
+.pf-page .ui-section__head {
+    margin-bottom: 1rem;
+}
+
+.pf-page .secao-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--p-ink);
+    font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+}
+
+.pf-page .secao-titulo .bi {
+    color: var(--p-accent);
+    font-size: 0.95em;
+}
+
+.pf-page .secao-titulo small {
+    font-weight: 550;
+    letter-spacing: 0;
+}
+
+/* ============================================================
+   6. CARDS DOS PROJETOS
+   ============================================================ */
+.pf-page .card-hover {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-r-lg);
+    background: var(--p-surface);
+    box-shadow: var(--p-shadow-1);
+    color: var(--p-ink);
+    cursor: pointer;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.pf-page .card-hover:hover {
+    border-color: var(--p-accent-line);
+    box-shadow: var(--p-shadow-2);
+    transform: translateY(-2px);
+}
+
+.pf-page .card-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 150px;
+    overflow: hidden;
+    background: var(--p-surface-3);
+    border-bottom: 1px solid var(--p-line);
+}
+
+.pf-page .card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    transition: filter 0.3s ease;
+}
+
+.pf-page .card-hover:hover .card-image-wrapper img {
+    filter: contrast(1.03);
+}
+
+.pf-page .card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 65%, rgba(7, 14, 24, 0.28) 100%);
+    pointer-events: none;
+}
+
+.pf-page .card-image-placeholder {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    background: var(--p-surface-3);
+    color: var(--p-accent);
+    font-size: 2.5rem;
+}
+
+.pf-page .card-compacto .card-image-wrapper {
+    aspect-ratio: auto;
+    height: 110px;
+    max-height: 110px;
+}
+
+.pf-page .card-body-custom {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding: 1rem 1.1rem 1.1rem;
+}
+
+.pf-page .card-title-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0 0 0.4rem;
+    color: var(--p-ink);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.pf-page .card-title-custom .bi {
+    color: var(--p-accent);
+    font-size: 0.95em;
+}
+
+.pf-page .card-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0 0 0.75rem;
+    color: var(--p-muted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}
+
+.pf-page .card-compacto .card-desc {
+    -webkit-line-clamp: 2;
+}
+
+/* selo de status sobre a imagem (cor vem do bg-* do Bootstrap, que o
+   portal.css deixa suave nos dois temas) */
+.pf-page .status-badge-custom {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    z-index: 2;
+    padding: 0.28rem 0.55rem;
+    border-radius: var(--p-r-pill);
+    box-shadow: var(--p-shadow-1);
+}
+
+/* ============================================================
+   7. PILULAS DE STACK, DESTAQUES E FONTES
+   ============================================================ */
+.pf-page .stack-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.8rem;
+}
+
+.pf-page .stack-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.22rem 0.5rem;
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-r-sm);
+    background: var(--p-surface-2);
+    color: var(--p-ink-soft);
+    font-family: var(--p-font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+
+.pf-page .destaques-list {
+    margin: 0 0 0.8rem;
+    padding: 0;
+    list-style: none;
+    color: var(--p-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.pf-page .destaques-list li {
+    position: relative;
+    margin-bottom: 0.3rem;
+    padding-left: 1.05rem;
+}
+
+.pf-page .destaques-list li:last-child {
+    margin-bottom: 0;
+}
+
+.pf-page .destaques-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--p-accent);
+    font-weight: 700;
+}
+
+.pf-page .destaques-list strong {
+    color: var(--p-ink-soft);
+}
+
+.pf-page .fontes-linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.75rem;
+    color: var(--p-muted);
+    font-size: 0.7rem;
+}
+
+.pf-page .fontes-linha > .bi {
+    color: var(--p-accent);
+}
+
+.pf-page .fontes-linha .rotulo {
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.pf-page .fontes-linha .sep {
+    opacity: 0.45;
+}
+
+.pf-page .fonte-link {
+    color: var(--p-accent);
+    text-decoration: none;
+    border-bottom: 1px dotted currentColor;
+}
+
+.pf-page .fonte-link:hover,
+.pf-page .fonte-link:focus-visible {
+    color: var(--p-accent-strong);
+    border-bottom-style: solid;
+}
+
+/* ============================================================
+   8. BOTOES
+   ============================================================ */
+.pf-page .btn-acessar {
+    width: auto;
+    min-height: 36px;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+}
+
+.pf-page .card-acoes {
+    margin-top: auto;
+}
+
+.pf-page .card-acoes .btn-acessar:not(:first-child) {
+    flex: 0 0 auto;
+}
+
+.pf-page .btn-acessar-grande {
+    min-height: 46px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+}
+
+/* ============================================================
+   9. REPOSITORIOS SEM CARD
+   ============================================================ */
+.pf-page .pf-repos {
+    text-align: center;
+}
+
+.pf-page .pf-repos__head {
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.pf-page .pf-repos__texto {
+    margin: 0;
+    color: var(--p-muted);
+    font-size: 0.875rem;
+}
+
+/* ============================================================
+   10. FAIXA DE TECNOLOGIAS
+   ============================================================ */
+.pf-page .tech-strip {
+    padding: clamp(1.4rem, 2.6vw, 2rem) clamp(1rem, 2vw, 1.5rem);
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-r-lg);
+    background: var(--p-surface);
+    box-shadow: var(--p-shadow-1);
+    text-align: center;
+}
+
+.pf-page .pf-tech__head {
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.pf-page .pf-tech__head .ui-eyebrow {
+    color: var(--p-accent);
+}
+
+.pf-page .pf-tech__head .secao-titulo {
+    justify-content: center;
+}
+
+.pf-page .tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    justify-content: center;
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.pf-page .tech-badge {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--p-line-strong);
+    border-radius: var(--p-r-pill);
+    background: var(--p-surface-2);
+    color: var(--p-ink-soft);
+    font-family: var(--p-font-sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: help;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.pf-page .tech-badge:hover,
+.pf-page .tech-badge:focus-visible,
+.pf-page .tech-badge.ativo {
+    border-color: var(--p-accent);
+    background: var(--p-accent-soft);
+    color: var(--p-accent);
+}
+
+.pf-page .tech-detail {
+    max-width: 860px;
+    min-height: 3.2rem;
+    margin: 1rem auto 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--p-line);
+    border-left: 3px solid var(--p-line-strong);
+    border-radius: var(--p-r-md);
+    background: var(--p-surface-2);
+    color: var(--p-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    text-align: left;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.pf-page .tech-detail.detalhe-ativo {
+    border-left-color: var(--p-accent);
+    color: var(--p-ink);
+}
+
+.pf-page .tech-detail strong {
+    color: var(--p-ink);
+}
+
+.pf-page .tech-detail a {
+    color: var(--p-accent);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.pf-page .tech-detail a:hover {
+    text-decoration: underline;
+}
+
+.pf-page .tech-detail-hint {
+    font-style: italic;
+}
+
+/* ============================================================
+   11. RODAPE
+   ============================================================ */
+.pf-page .ui-footer {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    background: var(--p-surface);
+}
+
+.pf-page .ui-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.pf-page .ui-footer__brand .badge {
+    padding: 0.25rem 0.55rem;
+    font-size: 0.68rem;
+}
+
+.pf-page .ui-footer__note a {
+    color: var(--p-muted);
+}
+
+.pf-page .ui-footer__note a:hover {
+    color: var(--p-accent);
+}
+
+/* ============================================================
+   12. DETALHE DO PROJETO (core/projeto.html)
+   ============================================================ */
+.pf-page .pf-voltar {
+    margin-bottom: 1.25rem;
+}
+
+.pf-page .btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--p-r-sm);
+    color: var(--p-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.pf-page .btn-voltar:hover,
+.pf-page .btn-voltar:focus-visible {
+    background: var(--p-surface-2);
+    color: var(--p-ink);
+}
+
+.pf-page .pf-projeto-hero {
+    margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+    padding-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+    border-bottom: 1px solid var(--p-line);
+}
+
+.pf-page .pf-projeto-hero .ui-eyebrow {
+    margin-bottom: 0.45rem;
+    color: var(--p-accent);
+}
+
+.pf-page .pf-projeto-hero .ui-eyebrow .bi {
+    margin-right: 0.35rem;
+}
+
+.pf-page .pf-projeto-hero__topo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.pf-page .pf-projeto-hero .hero-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    color: var(--p-ink);
+    font-size: clamp(1.8rem, 3.6vw, 2.7rem);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+}
+
+.pf-page .pf-projeto-hero .hero-title .bi {
+    color: var(--p-accent);
+    font-size: 0.8em;
+}
+
+.pf-page .pf-status-projeto {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+}
+
+.pf-page .pf-projeto-hero .hero-subtitle {
+    max-width: 78ch;
+    margin: 0 0 1rem;
+    color: var(--p-muted);
+    font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+    line-height: 1.55;
+}
+
+.pf-page .pf-meta {
+    gap: 0.4rem;
+    margin-bottom: 1.15rem;
+}
+
+.pf-page .pf-meta .badge {
+    gap: 0.35rem;
+    padding: 0.32rem 0.65rem;
+    font-size: 0.72rem;
+}
+
+.pf-page .pf-acoes {
+    gap: 0.5rem;
+}
+
+.pf-page .pf-card {
+    border-radius: var(--p-r-lg);
+    background: var(--p-surface);
+}
+
+.pf-page .pf-card .card-body {
+    padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.pf-page .pf-card-titulo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 0.9rem;
+    color: var(--p-ink);
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.pf-page .pf-card-titulo .bi {
+    color: var(--p-accent);
+}
+
+.pf-page .pf-card-titulo small {
+    color: var(--p-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+/* fontes de dados do detalhe */
+.pf-page .fontes-lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9rem;
+}
+
+.pf-page .fontes-lista li {
+    position: relative;
+    padding: 0.55rem 0 0.55rem 1.15rem;
+    border-bottom: 1px solid var(--p-line);
+}
+
+.pf-page .fontes-lista li:first-child {
+    padding-top: 0;
+}
+
+.pf-page .fontes-lista li:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.pf-page .fontes-lista li::before {
+    content: "";
+    position: absolute;
+    left: 0.15rem;
+    top: 1.05rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--p-accent);
+}
+
+.pf-page .fontes-lista li:first-child::before {
+    top: 0.5rem;
+}
+
+.pf-page .fontes-lista .fonte-link {
+    color: var(--p-accent);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 0;
+}
+
+.pf-page .fontes-lista .fonte-link:hover {
+    text-decoration: underline;
+}
+
+.pf-page .fontes-lista .fonte-obs {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--p-muted);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+/* galeria de telas */
+.pf-page .pf-galeria-secao {
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.pf-page .galeria {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: 1.1rem;
+}
+
+.pf-page .galeria-item {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-r-lg);
+    background: var(--p-surface);
+    box-shadow: var(--p-shadow-1);
+    cursor: zoom-in;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pf-page .galeria-item:hover,
+.pf-page .galeria-item:focus-visible {
+    border-color: var(--p-accent-line);
+    box-shadow: var(--p-shadow-2);
+}
+
+.pf-page .galeria-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid var(--p-line);
+}
+
+.pf-page .galeria-item .legenda {
+    padding: 0.7rem 0.9rem;
+    color: var(--p-ink-soft);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.pf-page .galeria-zoom {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--p-r-sm);
+    background: rgba(7, 14, 24, 0.72);
+    color: #ffffff;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+
+.pf-page .galeria-item:hover .galeria-zoom,
+.pf-page .galeria-item:focus-visible .galeria-zoom {
+    opacity: 1;
+}
+
+/* lightbox/carrossel: segue escuro de proposito (fundo do modal) */
+.pf-page .galeria-modal .carousel-item {
+    height: 80vh;
+    background: #0b1220;
+}
+
+.pf-page .galeria-modal .carousel-item img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.pf-page .galeria-modal .carousel-caption {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 1.5rem 1rem 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+}
+
+.pf-page .galeria-modal .carousel-control-prev,
+.pf-page .galeria-modal .carousel-control-next {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: var(--p-r-md);
+    background: rgba(0, 0, 0, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    opacity: 1;
+}
+
+.pf-page .galeria-modal .carousel-control-prev {
+    left: 1rem;
+}
+
+.pf-page .galeria-modal .carousel-control-next {
+    right: 1rem;
+}
+
+.pf-page .galeria-modal .carousel-control-prev:hover,
+.pf-page .galeria-modal .carousel-control-next:hover {
+    background: rgba(0, 0, 0, 0.88);
+}
+
+.pf-page .galeria-modal .carousel-control-prev-icon,
+.pf-page .galeria-modal .carousel-control-next-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+/* ============================================================
+   13. RESPONSIVO
+   ============================================================ */
+@media (max-width: 1199.98px) {
+    .site-topbar .site-nav {
+        gap: 0.1rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .site-topbar .site-inner {
+        min-height: 0;
+        padding-block: 0.7rem;
+        gap: 0.5rem;
+    }
+
+    .site-topbar .ui-topbar__actions {
+        margin-left: auto;
+    }
+
+    .site-topbar .navbar-collapse.show {
+        flex-basis: 100%;
+        width: 100%;
+        padding: 0.75rem 0 0.5rem;
+        border-top: 1px solid var(--p-line);
+    }
+
+    .site-topbar .site-nav {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        margin-left: 0;
+        gap: 2px;
+    }
+
+    .site-topbar .site-nav .site-link {
+        justify-content: flex-start;
+        width: 100%;
+        padding: 0.7rem 0.75rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+    }
+
+    .pf-page .hero-demo-note {
+        font-size: 0.84rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .pf-page .pf-kpis {
+        gap: 0.75rem;
+    }
+
+    .pf-page .pf-status {
+        padding: 0.65rem 0.75rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .site-topbar .site-marca {
+        font-size: 0.98rem;
+        gap: 0.5rem;
+    }
+
+    .site-topbar .ui-brand-mark {
+        width: 31px;
+        height: 31px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+    }
+
+    .pf-page .hero .hero-title {
+        font-size: clamp(1.9rem, 9vw, 2.4rem);
+    }
+
+    .pf-page .hero-demo-note {
+        padding: 0.85rem 0.95rem;
+    }
+
+    .pf-page .card-acoes {
+        flex-wrap: wrap;
+    }
+
+    .pf-page .card-acoes .btn-acessar:first-child {
+        flex-basis: 100%;
+    }
+}
+
+/* ============================================================
+   14. MOVIMENTO REDUZIDO
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    .pf-page .card-hover {
+        transition: none;
+    }
+
+    .pf-page .card-hover:hover {
+        transform: none;
+    }
+}
+
+/* ============================================================
+   15. IMPRESSAO
+   ============================================================ */
+@media print {
+    .site-topbar,
+    .pf-page .ui-footer,
+    .pf-page .pf-voltar,
+    .pf-page .galeria-zoom {
+        display: none;
+    }
+
+    .pf-page .card-hover,
+    .pf-page .pf-card,
+    .pf-page .galeria-item {
+        box-shadow: none;
+    }
+}

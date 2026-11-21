@@ -6,10 +6,19 @@
    carregado antes deste; aqui ficam os tokens do site e o que e
    proprio do portfolio: cards, hero e a barra .site-topbar).
 
+   Desde o reskin do portfolio, a camada visual visivel nas paginas
+   do menu e' o design system do portal:
+     portal.css       (copiado do cnpj_interface: tokens --p-* e
+                       componentes .ui-*)
+     portal-menu.css  (o que e' proprio do portfolio: hero, KPIs,
+                       cards, faixa de tecnologias, rodape)
+   Os dois carregam depois deste arquivo; site.css fica como base
+   de tokens antigos e das paginas que ainda usam estas classes.
+
    Os nomes antigos das variaveis (--brand, --bg-1, --card-bg,
    --shadow...) foram mantidos de proposito: os <style> locais de
-   landing.html, menu.html e projeto.html leem esses nomes, e
-   assim eles seguem a identidade sem reescrever cada regra.
+   menu.html e projeto.html leem esses nomes, e assim eles seguem a
+   identidade sem reescrever cada regra.
 
    O tema vem de dois atributos no <html>:
      data-theme     -> nossos estilos (este arquivo)

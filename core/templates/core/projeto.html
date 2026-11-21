@@ -8,343 +8,173 @@
     {% include 'core/_tema_head.html' %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{% static 'css/interface-corporativa.css' %}?v=20261120">
+    {% comment %}
+      site.css guarda os tokens antigos usados pelas paginas do site;
+      a camada visual nova (portal.css + portal-menu.css) carrega depois.
+    {% endcomment %}
     <link rel="stylesheet" href="{% static 'css/site.css' %}?v=4">
-    <style>
-        /* Variaveis de tema: static/css/site.css (comum as tres paginas). */
-        body {
-            background: var(--bg-1);
-            min-height: 100vh;
-            color: var(--text);
-        }
-        .hero-title {
-            font-family: var(--sis-fonte-display);
-            font-weight: 600;
-            color: var(--header-text);
-            letter-spacing: -0.03em;
-            line-height: 1.06;
-        }
-        .hero-subtitle {
-            color: var(--text-muted);
-            font-size: 1.05rem;
-        }
-        .btn-voltar {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color var(--sis-transicao);
-        }
-        .btn-voltar:hover {
-            color: var(--accent);
-        }
-        .card-section {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--sis-raio);
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--card-shadow);
-        }
-        .stack-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.35rem;
-        }
-        .stack-badge {
-            background: var(--badge-bg);
-            color: var(--badge-text);
-            font-family: var(--sis-fonte-dado);
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 0.25rem 0.55rem;
-            border-radius: var(--sis-raio);
-            letter-spacing: 0.02em;
-            white-space: nowrap;
-        }
-        .destaques-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-        /* Fontes publicas dos dados */
-        .fontes-lista {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-        .fontes-lista li {
-            padding: 0.5rem 0 0.5rem 1.5rem;
-            position: relative;
-            border-bottom: 1px solid var(--card-border);
-        }
-        .fontes-lista li:last-child { border-bottom: none; }
-        .fontes-lista li::before {
-            content: "🔗";
-            position: absolute;
-            left: 0;
-            font-size: 0.8rem;
-            line-height: 1.6;
-        }
-        .fontes-lista .fonte-link {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .fontes-lista .fonte-link:hover { text-decoration: underline; }
-        .fontes-lista .fonte-obs {
-            display: block;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
-        .destaques-list li {
-            padding-left: 1.2rem;
-            position: relative;
-            margin-bottom: 0.35rem;
-        }
-        .destaques-list li::before {
-            content: "—";
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-            font-weight: bold;
-        }
-        .galeria {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.25rem;
-        }
-        .galeria-item {
-            position: relative;
-            cursor: zoom-in;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--sis-raio);
-            overflow: hidden;
-            transition: border-color var(--sis-transicao);
-            box-shadow: var(--card-shadow);
-        }
-        .galeria-item:hover {
-            border-color: var(--accent);
-        }
-        .galeria-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-bottom: 1px solid var(--card-border);
-        }
-        .galeria-item .legenda {
-            padding: 0.75rem 1rem;
-            font-size: 0.85rem;
-            color: var(--text);
-            font-weight: 500;
-        }
-        .galeria-zoom {
-            position: absolute;
-            top: 0.6rem;
-            right: 0.6rem;
-            width: 32px;
-            height: 32px;
-            border-radius: var(--sis-raio);
-            background: rgba(0, 0, 0, 0.68);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity var(--sis-transicao);
-            pointer-events: none;
-        }
-        .galeria-item:hover .galeria-zoom {
-            opacity: 1;
-        }
-        /* Lightbox / carrossel da galeria */
-        .galeria-modal .carousel-item {
-            height: 80vh;
-            background: #121a24;
-        }
-        .galeria-modal .carousel-item img {
-            height: 100%;
-            width: 100%;
-            object-fit: contain;
-        }
-        .galeria-modal .carousel-caption {
-            left: 0;
-            right: 0;
-            bottom: 0;
-            padding: 1.5rem 1rem 1rem;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
-        }
-        /* Setas de navegação sempre visíveis */
-        .galeria-modal .carousel-control-prev,
-        .galeria-modal .carousel-control-next {
-            top: 50%;
-            bottom: auto;
-            transform: translateY(-50%);
-            width: 52px;
-            height: 52px;
-            border-radius: var(--sis-raio);
-            background: rgba(0, 0, 0, 0.62);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            opacity: 1;
-        }
-        .galeria-modal .carousel-control-prev {
-            left: 1rem;
-        }
-        .galeria-modal .carousel-control-next {
-            right: 1rem;
-        }
-        .galeria-modal .carousel-control-prev:hover,
-        .galeria-modal .carousel-control-next:hover {
-            background: rgba(0, 0, 0, 0.88);
-        }
-        .galeria-modal .carousel-control-prev-icon,
-        .galeria-modal .carousel-control-next-icon {
-            width: 1.75rem;
-            height: 1.75rem;
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-        }
-        .btn-acessar-grande {
-            border-radius: var(--sis-raio);
-            font-weight: 600;
-            letter-spacing: 0.01em;
-            padding: 0.65rem 1.5rem;
-            transition: background-color var(--sis-transicao), color var(--sis-transicao),
-                        border-color var(--sis-transicao);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/portal.css' %}?v=20261121">
+    <link rel="stylesheet" href="{% static 'css/portal-menu.css' %}?v=1">
 </head>
-<body>
+<body class="pf-page">
 
-    <!-- Barra comum (landing, menu e detalhe de projeto) -->
-    {% include 'core/_topbar.html' with marca='Antonio Rosasse' inicio_url=landing_url %}
+    <a class="ui-skip" href="#conteudo">Ir para o conteúdo</a>
 
-    <div class="container py-4">
-        <!-- Botão voltar -->
-        <div class="mb-4">
+    <!-- Barra comum (menu e detalhe de projeto), no desenho do portal -->
+    {% include 'core/_topbar.html' with marca='Antonio Rosasse' tagline='Portfólio · projetos em produção' marca_icone='bi-buildings' inicio_url=landing_url %}
+
+    <main class="container ui-main" id="conteudo" tabindex="-1">
+
+        <!-- Voltar -->
+        <nav class="pf-voltar" aria-label="Navegação do projeto">
             <a href="{% url 'core:menu' %}" class="btn-voltar">
-                <i class="bi bi-arrow-left"></i> Voltar ao menu
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao menu
             </a>
-        </div>
+        </nav>
 
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1 class="hero-title mb-2">
-                    <i class="{{ projeto.icon }} me-2 text-{{ projeto.cor }}"></i>{{ projeto.nome }}
+        <!-- Header do projeto -->
+        <header class="pf-projeto-hero">
+            <p class="ui-eyebrow"><i class="{{ projeto.icon }}" aria-hidden="true"></i> Projeto em produção</p>
+            <div class="pf-projeto-hero__topo">
+                <h1 class="hero-title">
+                    <i class="{{ projeto.icon }}" aria-hidden="true"></i>{{ projeto.nome }}
                 </h1>
-                <p class="hero-subtitle mb-3">{{ projeto.descricao }}</p>
-
-                <!-- Status + Acesso -->
-                <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <span class="badge bg-{{ projeto.status_cor }}">
-                        {{ projeto.status }}
-                    </span>
-                    <a href="{{ projeto.url }}"
-                       class="btn btn-success btn-acessar-grande"
-                       target="_blank"
-                       rel="noopener">
-                        {% if projeto.demo %}Ver em produção{% else %}Acessar aplicação{% endif %}
-                        <i class="bi bi-box-arrow-up-right ms-1"></i>
-                    </a>
-                    <a href="{{ projeto.repo }}"
-                       class="btn btn-outline-secondary btn-acessar-grande"
-                       target="_blank"
-                       rel="noopener">
-                        <i class="bi bi-github me-1"></i>Código no GitHub
-                    </a>
-                </div>
+                <span class="badge bg-{{ projeto.status_cor }} pf-status-projeto">
+                    {{ projeto.status }}
+                </span>
             </div>
-        </div>
+            <p class="hero-subtitle">{{ projeto.descricao }}</p>
+
+            {# Resumo com contagens reais do contexto (sem numero inventado) #}
+            <div class="ui-cluster pf-meta">
+                <span class="badge bg-secondary">
+                    <i class="bi bi-layers" aria-hidden="true"></i> {{ projeto.stack|length }} tecnologias
+                </span>
+                {% if projeto.fontes %}
+                <span class="badge bg-secondary">
+                    <i class="bi bi-database-check" aria-hidden="true"></i> {{ projeto.fontes|length }} bases públicas
+                </span>
+                {% endif %}
+                {% if projeto.galeria %}
+                <span class="badge bg-secondary">
+                    <i class="bi bi-images" aria-hidden="true"></i> {{ projeto.galeria|length }} telas
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Acesso -->
+            <div class="ui-cluster pf-acoes">
+                <a href="{{ projeto.url }}"
+                   class="btn btn-primary btn-acessar-grande"
+                   target="_blank"
+                   rel="noopener">
+                    {% if projeto.demo %}Ver em produção{% else %}Acessar aplicação{% endif %}
+                    <i class="bi bi-box-arrow-up-right ms-1" aria-hidden="true"></i>
+                </a>
+                <a href="{{ projeto.repo }}"
+                   class="btn btn-outline-secondary btn-acessar-grande"
+                   target="_blank"
+                   rel="noopener">
+                    <i class="bi bi-github me-1" aria-hidden="true"></i>Código no GitHub
+                </a>
+            </div>
+        </header>
 
         <!-- Stack + Destaques -->
         <div class="row g-4 mb-4">
             <div class="col-md-6">
-                <div class="card-section h-100">
-                    <h5 class="mb-3">
-                        <i class="bi bi-layers text-{{ projeto.cor }}"></i> Stack
-                    </h5>
-                    <div class="stack-badges">
-                        {% for tech in projeto.stack %}
-                        <span class="stack-badge">{{ tech }}</span>
-                        {% endfor %}
+                <section class="card pf-card h-100">
+                    <div class="card-body">
+                        <h2 class="pf-card-titulo">
+                            <i class="bi bi-layers" aria-hidden="true"></i> Stack
+                        </h2>
+                        <div class="stack-badges">
+                            {% for tech in projeto.stack %}
+                            <span class="stack-badge">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                </section>
             </div>
             <div class="col-md-6">
-                <div class="card-section h-100">
-                    <h5 class="mb-3">
-                        <i class="bi bi-stars text-{{ projeto.cor }}"></i> Destaques técnicos
-                    </h5>
-                    <ul class="destaques-list">
-                        {% for item in projeto.destaques %}
-                        <li>{{ item }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                <section class="card pf-card h-100">
+                    <div class="card-body">
+                        <h2 class="pf-card-titulo">
+                            <i class="bi bi-stars" aria-hidden="true"></i> Destaques técnicos
+                        </h2>
+                        <ul class="destaques-list">
+                            {% for item in projeto.destaques %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </section>
             </div>
         </div>
 
         <!-- Fontes publicas dos dados -->
         {% if projeto.fontes %}
-        <div class="card-section">
-            <h5 class="mb-3">
-                <i class="bi bi-database-check text-{{ projeto.cor }}"></i> Fontes de dados
-                <small class="text-muted fs-6">({{ projeto.fontes|length }} bases públicas)</small>
-            </h5>
-            <ul class="fontes-lista">
-                {% for fonte in projeto.fontes %}
-                <li>
-                    <a href="{{ fonte.url }}"
-                       class="fonte-link"
-                       target="_blank"
-                       rel="noopener">{{ fonte.nome }}</a>
-                    <span class="fonte-obs">{{ fonte.obs }}</span>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+        <section class="card pf-card pf-card--fontes mb-4">
+            <div class="card-body">
+                <h2 class="pf-card-titulo">
+                    <i class="bi bi-database-check" aria-hidden="true"></i> Fontes de dados
+                    <small class="fs-6 ui-muted">({{ projeto.fontes|length }} bases públicas)</small>
+                </h2>
+                <ul class="fontes-lista">
+                    {% for fonte in projeto.fontes %}
+                    <li>
+                        <a href="{{ fonte.url }}"
+                           class="fonte-link"
+                           target="_blank"
+                           rel="noopener">{{ fonte.nome }}</a>
+                        <span class="fonte-obs">{{ fonte.obs }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
         {% endif %}
 
         <!-- Nota apenas do card de demonstracao (o proprio site) -->
         {% if projeto.demo %}
-        <div class="card-section">
-            <h5 class="mb-3">
-                <i class="bi bi-broadcast text-{{ projeto.cor }}"></i> O que observar nesta demonstração
-            </h5>
-            <ul class="destaques-list">
-                <li>
-                    As 4 aplicações do portfólio estão <strong>em produção</strong>, com banco
-                    de verdade: 74,4 milhões de CNPJs no PostgreSQL e 500 mil pessoas no
-                    DB2 de um IBM i.
-                </li>
-                <li>
-                    O selo de status de cada card vem de um health check que testa o banco do
-                    app (não é estático): <strong>No ar</strong> / <strong>Lento</strong> /
-                    <strong>Fora</strong>.
-                </li>
-                <li>
-                    Cada card abre a aplicação real e tem uma página de detalhe com a stack
-                    exata, os destaques técnicos e as telas.
-                </li>
-                <li>
-                    Tema claro/escuro sem framework de CSS: variáveis CSS +
-                    <code>localStorage</code> + <code>prefers-color-scheme</code>.
-                </li>
-            </ul>
-        </div>
+        <section class="card pf-card mb-4">
+            <div class="card-body">
+                <h2 class="pf-card-titulo">
+                    <i class="bi bi-broadcast" aria-hidden="true"></i> O que observar nesta demonstração
+                </h2>
+                <ul class="destaques-list">
+                    <li>
+                        As 4 aplicações do portfólio estão <strong>em produção</strong>, com banco
+                        de verdade: 74,4 milhões de CNPJs no PostgreSQL e 500 mil pessoas no
+                        DB2 de um IBM i.
+                    </li>
+                    <li>
+                        O selo de status de cada card vem de um health check que testa o banco do
+                        app (não é estático): <strong>No ar</strong> / <strong>Lento</strong> /
+                        <strong>Fora</strong>.
+                    </li>
+                    <li>
+                        Cada card abre a aplicação real e tem uma página de detalhe com a stack
+                        exata, os destaques técnicos e as telas.
+                    </li>
+                    <li>
+                        Tema claro/escuro sem framework de CSS: variáveis CSS +
+                        <code>localStorage</code> + <code>prefers-color-scheme</code>.
+                    </li>
+                </ul>
+            </div>
+        </section>
         {% endif %}
 
         <!-- Galeria -->
         {% if projeto.galeria %}
-        <div class="mb-4">
-            <h4 class="hero-title mb-3">
-                <i class="bi bi-images"></i> Galeria de telas
-                <small class="text-muted fs-6">({{ projeto.galeria|length }} imagens)</small>
-            </h4>
+        <section class="ui-section pf-galeria-secao">
+            <div class="ui-section__head">
+                <h2 class="secao-titulo">
+                    <i class="bi bi-images" aria-hidden="true"></i> Galeria de telas
+                    <small class="fs-6 ui-muted">({{ projeto.galeria|length }} imagens)</small>
+                </h2>
+            </div>
             <div class="galeria">
                 {% for img in projeto.galeria %}
                 <div class="galeria-item"
@@ -355,7 +185,7 @@
                      data-index="{{ forloop.counter0 }}"
                      title="Clique para ampliar">
                     <img src="{% static img.arquivo %}" alt="{{ img.titulo }}" loading="lazy">
-                    <span class="galeria-zoom"><i class="bi bi-zoom-in"></i></span>
+                    <span class="galeria-zoom"><i class="bi bi-zoom-in" aria-hidden="true"></i></span>
                     <div class="legenda">{{ img.titulo }}</div>
                 </div>
                 {% endfor %}
@@ -367,7 +197,7 @@
                     <div class="modal-content border-0" style="background: transparent;">
                         <div class="modal-header border-0">
                             <h5 class="modal-title text-white" id="galeriaModalLabel">
-                                <i class="bi bi-images me-2"></i>{{ projeto.nome }}
+                                <i class="bi bi-images me-2" aria-hidden="true"></i>{{ projeto.nome }}
                             </h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                         </div>
@@ -405,17 +235,22 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
         {% endif %}
+    </main>
 
-        <!-- Rodapé -->
-        <footer class="text-center small mt-5" style="color: var(--text-muted);">
-            <hr style="border-color: var(--divider);">
-            <p class="mb-0">
-                Versão {{ versao }} · {{ ambiente }} · {{ host_atual }}
+    <!-- Rodapé -->
+    <footer class="ui-footer">
+        <div class="container ui-footer__inner">
+            <div class="ui-footer__brand">
+                <span class="ui-brand-mark" aria-hidden="true"><i class="bi bi-buildings"></i></span>
+                <span>Versão {{ versao }} · {{ ambiente }} · {{ host_atual }}</span>
+            </div>
+            <p class="ui-footer__note">
+                <a href="{% url 'core:menu' %}">Voltar ao portfólio</a>
             </p>
-        </footer>
-    </div>
+        </div>
+    </footer>
 
     <script src="{% static 'js/tema.js' %}"></script>
 
