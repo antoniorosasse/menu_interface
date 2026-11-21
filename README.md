@@ -1,10 +1,15 @@
 # Menu Interface
 
-Página inicial do Sistema Integrado (busquecnpj.com.br). Mostra **7 cards em duas
-seções** — os 6 apps do sistema (4 do `cnpj_interface`, 2 do `as400_interface`)
-e este próprio site como **demonstração ao vivo** do portfólio —, faz health
-check em tempo real dos outros apps e tem uma página de detalhe por projeto
-(com galeria de telas).
+Portfólio de projetos (arosasse.tec.br). Mostra **7 cards em duas seções** —
+os 6 apps do sistema (4 do `cnpj_interface`, 2 do `as400_interface`) e este
+próprio site como **demonstração ao vivo** do portfólio —, faz health check em
+tempo real dos outros apps e tem uma página de detalhe por projeto (com galeria
+de telas).
+
+A **landing comercial** do produto **não mora mais aqui**: ela é servida pelo
+`cnpj_interface` em `/site/` (`core:landing`), no domínio `busquecnpj.com.br` em
+produção. Este site é o portfólio em qualquer Host; o item "Início" da barra
+aponta para a landing do `cnpj_interface` (dev: `http://<host>:8002/site/`).
 
 ## Índice
 
@@ -63,9 +68,14 @@ Acessa em http://localhost:8000/
 
 | Método | URL | O que faz |
 |---|---|---|
-| GET | `/` | Página do menu (7 cards em 2 seções + faixa de tecnologias) |
+| GET | `/` | Página do menu/portfólio (7 cards em 2 seções + faixa de tecnologias) |
+| GET | `/menu/` | Preview do portfólio em qualquer Host |
 | GET | `/projeto/<id>/` | Página de detalhe de um projeto (galeria) |
 | GET | `/health/` | Health check leve (responde `ok`) |
+
+A antiga rota `/site/` (preview da landing comercial) foi **removida**: a
+landing vive no `cnpj_interface` (`/site/`), que também responde pelo
+`busquecnpj.com.br` em produção.
 
 ## Funcionalidades da home
 
@@ -176,15 +186,22 @@ Na máquina NoteNeto:
 ## Ambiente
 
 - **Local:** http://localhost:8000
-- **Produção:** https://busquecnpj.com.br
+- **Produção (portfólio):** https://arosasse.tec.br
+- **Landing comercial (outro projeto):** https://busquecnpj.com.br (servida pelo `cnpj_interface` em `/site/`)
 
 ## Variáveis de ambiente
 
-Ver `.env.example`. São 3:
+Ver `.env.example`. São 3 obrigatórias:
 
 - `SECRET_KEY` — chave do Django (obrigatório)
 - `DEBUG` — `True` ou `False`
 - `ALLOWED_HOSTS` — lista separada por vírgula
+
+Opcionais (usadas pelos links do site):
+
+- `PORTFOLIO_URL` — URL pública deste portfólio (padrão: `https://arosasse.tec.br`)
+- `LANDING_URL` — URL da landing no `cnpj_interface` (padrão em produção:
+  `https://busquecnpj.com.br/`; em dev: `http://<host>:8002/site/`)
 
 ## Repositórios relacionados
 

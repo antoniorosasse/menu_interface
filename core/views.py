@@ -47,68 +47,19 @@ LIMIAR_LENTO_MS = 2000
 
 
 # ============================================================
-# HOSTS E URLS DO SITE
+# URLS DO SITE
 # ============================================================
-# O mesmo processo (menu.service) serve dois sites e escolhe pelo Host:
-#   - busquecnpj.com.br (e www) -> landing comercial
-#   - qualquer outro host       -> menu/portfolio (arosasse.tec.br)
-#
-# Durante a transicao o portfolio atende em portfolio.busquecnpj.com.br;
-# quando o dominio proprio entrar, a virada e' so de .env (PORTFOLIO_URL
-# e ALLOWED_HOSTS) + restart. Nenhuma linha de codigo muda.
+# Este processo (menu.service) e' so o portfolio (arosasse.tec.br). A
+# landing comercial saiu daqui: agora e' servida pelo cnpj_interface em
+# /site/ (core:landing). PORTFOLIO_URL e LANDING_URL continuam vindo do
+# .env para a virada de dominio sem mexer em codigo.
 
-def _hosts_env(nome: str, default: str) -> set:
-    """Le do ambiente uma lista de hosts separada por virgula."""
-    bruto = os.getenv(nome, default)
-    return {h.strip().lower() for h in bruto.split(',') if h.strip()}
-
-
-HOSTS_COMERCIAL = _hosts_env(
-    'HOSTS_COMERCIAL', 'busquecnpj.com.br,www.busquecnpj.com.br'
-)
 PORTFOLIO_URL = os.getenv('PORTFOLIO_URL', 'https://arosasse.tec.br').rstrip('/')
 
-# Pagina inicial do produto (landing comercial). Em producao e' o dominio raiz;
-# no dev a landing e' servida em /site/ pelo runserver da porta 8000 (o
-# portfolio fica em /menu/ quando HOSTS_COMERCIAL inclui o host). LANDING_URL
-# no .env aponta para outro host sem mexer no codigo.
+# Pagina inicial do produto (landing comercial no cnpj_interface). No dev o
+# runserver do cnpj fica na porta 8002 (/site/); em producao e' o dominio
+# raiz. LANDING_URL no .env aponta para outro host sem mexer no codigo.
 LANDING_URL = os.getenv('LANDING_URL', '').rstrip('/')
-
-
-# ============================================================
-# LANDING COMERCIAL (busquecnpj.com.br)
-# ============================================================
-# Ids dos projetos de _montar_contexto que a landing apresenta, na ordem
-# em que aparecem. A landing NAO e' o portfolio: ela mostra o sistema em
-# uma frase, para quem quer contratar. Destaques tecnicos, stack e telas
-# continuam so' no menu (/menu/).
-SOLUCOES_LANDING = ('cnpj', 'chat_empresas', 'proximidade', 'estatisticas')
-
-# Versao comercial da descricao de cada solucao: sem jargao (keyset,
-# RAG, CTE, pgvector...). O texto tecnico do card fica intacto no
-# portfolio; aqui trocamos so' a frase de apresentacao.
-TEXTOS_LANDING = {
-    'cnpj': (
-        'Consulte qualquer uma das 74,4 milhões de empresas da Receita '
-        'Federal por nome, ramo de atividade, cidade ou situação cadastral, '
-        'com endereço e sócios de cada uma.'
-    ),
-    'chat_empresas': (
-        'Pergunte em português e receba a resposta pronta: a IA busca as '
-        'empresas na base, confere os números e responde apenas com o que '
-        'está registrado.'
-    ),
-    'proximidade': (
-        'Encontre estabelecimentos num raio de até 100 km a partir de um '
-        'CNPJ, CEP, cidade ou coordenada, com a distância em km de cada '
-        'resultado.'
-    ),
-    'estatisticas': (
-        'Os totais da base prontos para consultar: quantas empresas estão '
-        'ativas, quantas são do Simples/MEI, ranking de estados, porte, '
-        'natureza jurídica e ramo de atividade.'
-    ),
-}
 
 
 # ============================================================
@@ -344,8 +295,8 @@ def _montar_contexto(request):
         # pede a senha e volta para la' (next=/chat/); logado entra direto.
         # Nao apontar para /accounts/login/: como o login redireciona para a
         # pagina inicial do produto, quem ja estava logado clicava em Entrar e
-        # voltava para esta propria landing (parecia que o site nao reconhecia
-        # o usuario). A sessao e' do cnpj_interface, nao deste site.
+        # voltava para a propria pagina inicial (parecia que o site nao
+        # reconhecia o usuario). A sessao e' do cnpj_interface, nao deste site.
         'login_url': f'{cnpj_base}/chat/',
         'repos_sem_card': [
             {'nome': 'ProjetoCargaDados', 'descricao': 'ETL em linha de comando: Parquet da Receita Federal -> Postgres/Mongo, e PESSOAS no DB2', 'url': 'https://github.com/antoniorosasse/ProjetoCargaDados'},
@@ -357,9 +308,10 @@ def _montar_contexto(request):
         'host_atual': host_completo,
         'portfolio_url': PORTFOLIO_URL,
         # Barra do portfolio: link "Inicio" para a pagina inicial do produto
-        # (landing). Em dev o runserver da landing fica na porta 8000.
+        # (landing comercial), que agora mora no cnpj_interface em /site/.
+        # Em dev o runserver do cnpj fica na porta 8002.
         'landing_url': LANDING_URL or (
-            f'http://{host_sem_porta}:8000/site/' if is_local
+            f'http://{host_sem_porta}:8002/site/' if is_local
             else 'https://busquecnpj.com.br/'
         ),
     }
@@ -367,51 +319,13 @@ def _montar_contexto(request):
 
 def home(request):
     """
-    Entrada do site: escolhe a pagina pelo Host da requisicao.
+    Entrada do site: sempre o portfolio.
 
-    - busquecnpj.com.br / www  -> landing comercial (site de servicos)
-    - qualquer outro host      -> menu/portfolio
-
-    A lista de hosts comerciais vem do .env (HOSTS_COMERCIAL), entao a
-    troca do dominio do portfolio nao exige mexer aqui.
+    A landing comercial nao mora mais aqui - ela e' servida pelo
+    cnpj_interface em /site/ (core:landing). Este site (menu.service) e' o
+    portfolio (arosasse.tec.br), apresentado em qualquer Host.
     """
-    host = request.get_host().split(':')[0].lower()
-    if host in HOSTS_COMERCIAL:
-        return landing_comercial(request)
     return menu_principal(request)
-
-
-def landing_comercial(request):
-    """
-    Landing do site comercial (busquecnpj.com.br).
-
-    Reusa _montar_contexto para herdar as URLs dos apps (dev: :8001/:8002,
-    prod: subdominios) e o health check com cache de 60s. As solucoes
-    apresentadas saem de SOLUCOES_LANDING, com a descricao comercial de
-    TEXTOS_LANDING (o texto tecnico fica no portfolio).
-
-    A copia com {**projeto} evita sobrescrever o dict original: o mesmo
-    objeto e' usado pelo menu.
-    """
-    context = _montar_contexto(request)
-    por_id = {p['id']: p for p in context['projetos']}
-
-    solucoes = []
-    for solucao_id in SOLUCOES_LANDING:
-        projeto = por_id.get(solucao_id)
-        if projeto is None:
-            continue
-        solucoes.append({
-            **projeto,
-            'descricao': TEXTOS_LANDING.get(solucao_id, projeto['descricao']),
-        })
-
-    context['solucoes'] = solucoes
-    context['todos_online'] = bool(solucoes) and all(
-        s['status_cor'] == 'success' for s in solucoes
-    )
-
-    return render(request, 'core/landing.html', context)
 
 
 def menu_principal(request):
