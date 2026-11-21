@@ -1,7 +1,8 @@
 {% comment %}
-  Barra de navegacao comum as tres paginas do site.
-  Uso (variaveis passadas no include, todas opcionais):
-    {% include 'core/_topbar.html' with marca='busquecnpj' icone_marca='bi-building' ancoras=True %}
+  Barra corporativa comum as tres paginas do site (mesmo desenho do
+  cnpj_interface/as400_interface). Uso (variaveis passadas no include,
+  todas opcionais):
+    include 'core/_topbar.html' with marca='busquecnpj' ancoras=True
 
   Vem do contexto (_montar_contexto em views.py):
     nav_apps  -> os 4 apps do sistema (Empresas, Proximidade, Estatisticas, Chat IA)
@@ -10,17 +11,17 @@
   inicio_url (opcional, passado no include): pagina inicial do produto
   (landing). Usado no portfolio e no detalhe de projeto, que nao sao a home.
 {% endcomment %}
-<nav class="site-topbar">
+<nav class="site-topbar" aria-label="Navegação principal">
     <div class="container site-inner">
         <a class="site-marca" href="{{ home_url|default:'/' }}">
-            <i class="bi {{ icone_marca|default:'bi-building' }} me-1"></i>{{ marca|default:'busquecnpj' }}
+            <span class="ui-brand-mark" aria-hidden="true"><span></span></span>{{ marca|default:'busquecnpj' }}
         </a>
         <div class="site-nav">
             {% if inicio_url %}
             {# Portfolio/detalhe: volta para a pagina inicial do produto. #}
             <a class="site-link" href="{{ inicio_url }}"
                title="Página inicial do busquecnpj (site do produto)">
-                <i class="bi bi-house-door"></i><span class="d-none d-lg-inline ms-1">Início</span>
+                <i class="bi bi-house-door"></i><span>Início</span>
             </a>
             {% endif %}
             {% if ancoras %}
@@ -31,12 +32,12 @@
             {% for app in nav_apps %}
             <a class="site-link" href="{{ app.url }}" target="_blank" rel="noopener"
                title="{{ app.nome }} — abre em nova aba">
-                <i class="bi {{ app.icon }}"></i><span class="d-none d-lg-inline ms-1">{{ app.nome }}</span>
+                <i class="bi {{ app.icon }}"></i><span>{{ app.nome }}</span>
             </a>
             {% endfor %}
             <a class="site-link site-entrar" href="{{ login_url }}" target="_blank" rel="noopener"
                title="Entrar no sistema — abre em nova aba">
-                <i class="bi bi-box-arrow-in-right"></i><span class="d-none d-sm-inline ms-1">Entrar</span>
+                <i class="bi bi-box-arrow-in-right"></i><span>Entrar</span>
             </a>
             <button type="button" class="site-toggle" id="siteTema"
                     aria-label="Alternar tema claro/escuro" title="Alternar tema">

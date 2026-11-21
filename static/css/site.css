@@ -1,9 +1,15 @@
 /* ============================================================
-   site.css - base visual comum as paginas do menu_interface
+   site.css - identidade visual CORPORATIVA do menu_interface
    ------------------------------------------------------------
-   Um lugar so para: variaveis de tema (claro/escuro) e a barra de
-   navegacao usada na landing comercial, no menu e no detalhe de
-   projeto. Antes cada template repetia o proprio :root.
+   Mesma paleta/tipografia/barra do interface-corporativa.css do
+   cnpj_interface e do as400_interface (o arquivo compartilhado e
+   carregado antes deste; aqui ficam os tokens do site e o que e
+   proprio do portfolio: cards, hero e a barra .site-topbar).
+
+   Os nomes antigos das variaveis (--brand, --bg-1, --card-bg,
+   --shadow...) foram mantidos de proposito: os <style> locais de
+   landing.html, menu.html e projeto.html leem esses nomes, e
+   assim eles seguem a identidade sem reescrever cada regra.
 
    O tema vem de dois atributos no <html>:
      data-theme     -> nossos estilos (este arquivo)
@@ -16,165 +22,446 @@
    ============================================================ */
 
 :root {
-    /* marca (nao muda com o tema: e' cor de fundo do hero/faixa) */
-    --brand-dark: #0b2545;
-    --brand: #13315c;
-    --brand-soft: #eef2f8;
-    --accent: #16a34a;
-    --accent-dark: #12813b;
+    color-scheme: light;
 
-    /* cor de titulo: no tema escuro fica clara (--brand-* continua azul) */
-    --titulo: #0b2545;
+    /* tokens (mesmos nomes do sistema.css) */
+    --sis-papel: #ffffff;
+    --sis-papel-alto: #ffffff;
+    --sis-papel-baixo: #f4f6f8;
+    --sis-tinta: #202833;
+    --sis-tinta-fraca: #57616e;
+    --sis-fio: #d9dfe6;
+    --sis-fio-forte: #9ba8b6;
+    --sis-carimbo: #0267c1;
+    --sis-carimbo-forte: #0055a1;
+    --sis-verde: #176b36;
+    --sis-ambar: #efa00b;
+    --sis-azul: #0075c4;
+    --sis-fonte-display: 'Segoe UI', Arial, sans-serif;
+    --sis-fonte-texto: 'Segoe UI', Arial, sans-serif;
+    --sis-fonte-dado: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    --sis-raio: 5px;
+    --sis-transicao: 140ms cubic-bezier(.2, .6, .3, 1);
+
+    /* marca (o "cabecalho" do catalogo) */
+    --brand-dark: #591f0a;
+    --brand: #0267c1;
+    --brand-soft: #f4f6f8;
+    --accent: #0267c1;
+    --accent-dark: #0055a1;
+
+    /* cor de titulo */
+    --titulo: #591f0a;
 
     /* superficies e texto */
-    --bg-1: #f5f7fa;
-    --bg-2: #c3cfe2;
-    --surface: #ffffff;
-    --border: #e2e8f0;
-    --text: #1e293b;
-    --text-muted: #5b6b82;
-    --divider: #e2e8f0;
+    --bg-1: #ffffff;
+    --bg-2: #f4f6f8;
+    --surface: #f4f6f8;
+    --border: #d9dfe6;
+    --text: #202833;
+    --text-muted: #57616e;
+    --divider: #d9dfe6;
 
-    /* aliases usados pelo menu e pelo detalhe de projeto */
+    /* aliases do menu e do detalhe de projeto */
     --card-bg: #ffffff;
-    --card-border: #e2e8f0;
-    --header-text: #0f172a;
-    --badge-bg: #f1f5f9;
-    --badge-text: #475569;
+    --card-border: #d9dfe6;
+    --header-text: #591f0a;
+    --badge-bg: #f4f6f8;
+    --badge-text: #57616e;
 
-    /* sombras */
-    --shadow: 0 2px 12px rgba(15, 23, 42, 0.07);
-    --shadow-hover: 0 18px 38px rgba(15, 23, 42, 0.16);
-    --card-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
-    --card-shadow-hover: 0 20px 40px rgba(15, 23, 42, 0.15);
+    /* sombras: cartao discreto sobre fundo branco */
+    --shadow: 0 1px 2px rgba(32, 40, 51, .06);
+    --shadow-hover: 0 2px 8px rgba(32, 40, 51, .10);
+    --card-shadow: var(--shadow);
+    --card-shadow-hover: var(--shadow-hover);
 
     /* barra */
-    --topbar-bg: rgba(255, 255, 255, 0.94);
+    --topbar-bg: #ffffff;
+
+    /* ---- Bootstrap 5.3 apontando para os tokens ---- */
+    --bs-body-bg: var(--bg-1);
+    --bs-body-color: var(--text);
+    --bs-body-font-family: var(--sis-fonte-texto);
+    --bs-body-font-size: 15px;
+    --bs-body-line-height: 1.5;
+    --bs-headings-font-family: var(--sis-fonte-display);
+    --bs-headings-font-weight: 730;
+    --bs-headings-color: var(--titulo);
+    --bs-secondary-color: var(--text-muted);
+    --bs-border-color: var(--border);
+    --bs-border-radius: var(--sis-raio);
+    --bs-border-radius-sm: var(--sis-raio);
+    --bs-border-radius-lg: var(--sis-raio);
+    --bs-link-color: var(--accent);
+    --bs-link-hover-color: var(--accent-dark);
+    --bs-primary: var(--accent);
+    --bs-primary-rgb: 2, 103, 193;
+    --bs-code-color: var(--accent);
+    --bs-focus-ring-color: rgba(2, 103, 193, .25);
+    --bs-box-shadow-sm: 0 1px 2px rgba(32, 40, 51, .06);
+    --bs-tertiary-bg: #f4f6f8;
 }
 
-[data-theme="dark"] {
-    --brand-soft: #1c2f4d;
-    --titulo: #e8f0fb;
+[data-theme="dark"],
+[data-bs-theme="dark"] {
+    color-scheme: dark;
 
-    --bg-1: #0f172a;
-    --bg-2: #111c30;
-    --surface: #16233a;
-    --border: #2b3b55;
-    --text: #f1f5f9;
-    --text-muted: #a3b3c7;
-    --divider: #2b3b55;
+    --sis-papel: #121a24;
+    --sis-papel-alto: #1c2734;
+    --sis-papel-baixo: #1c2734;
+    --sis-tinta: #edf2f8;
+    --sis-tinta-fraca: #b4c1ce;
+    --sis-fio: #354556;
+    --sis-fio-forte: #54677d;
+    --sis-carimbo: #80c3ff;
+    --sis-carimbo-forte: #b4dcff;
+    --sis-verde: #6fae8d;
+    --sis-ambar: #c9a356;
+    --sis-azul: #80c3ff;
 
-    --card-bg: #16233a;
-    --card-border: #2b3b55;
-    --header-text: #f8fafc;
-    --badge-bg: #27374f;
-    --badge-text: #cbd5e1;
+    --brand-soft: #1c2734;
+    --titulo: #f0d8cc;
+    --accent: #80c3ff;
+    --accent-dark: #b4dcff;
 
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-    --shadow-hover: 0 18px 38px rgba(0, 0, 0, 0.55);
-    --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.5);
+    --bg-1: #121a24;
+    --bg-2: #1c2734;
+    --surface: #1c2734;
+    --border: #354556;
+    --text: #edf2f8;
+    --text-muted: #b4c1ce;
+    --divider: #354556;
 
-    /* barra */
-    --topbar-bg: rgba(17, 26, 42, 0.94);
+    --card-bg: #1c2734;
+    --card-border: #354556;
+    --header-text: #f0d8cc;
+    --badge-bg: #193955;
+    --badge-text: #b4c1ce;
+
+    --topbar-bg: #121a24;
+
+    --bs-primary-rgb: 128, 195, 255;
+    --bs-link-color-rgb: 128, 195, 255;
+    --bs-focus-ring-color: rgba(128, 195, 255, .32);
 }
 
 /* ============================================================
-   BARRA DE NAVEGACAO (landing, menu e detalhe de projeto)
+   BASE
+   ============================================================ */
+body {
+    background: var(--bg-1);
+    color: var(--text);
+    font-family: var(--sis-fonte-texto);
+    font-size: var(--bs-body-font-size);
+    line-height: var(--bs-body-line-height);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+    font-family: var(--sis-fonte-display);
+    font-weight: 600;
+    letter-spacing: -.02em;
+    line-height: 1.12;
+    color: var(--titulo);
+    text-wrap: balance;
+}
+
+h1 { font-size: clamp(2rem, 4.4vw, 3rem); letter-spacing: -.035em; }
+h2 { font-size: clamp(1.5rem, 2.6vw, 1.9rem); }
+
+h1 .bi, h2 .bi { color: var(--accent); }
+
+a { text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+code, kbd {
+    font-family: var(--sis-fonte-dado);
+    font-size: .85em;
+    color: var(--accent);
+    background: var(--badge-bg);
+    padding: .05em .32em;
+    border-radius: var(--sis-raio);
+}
+
+::selection { background: var(--accent); color: var(--card-bg); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ============================================================
+   BARRA - a mesma ui-navbar do cnpj_interface/as400_interface
+   Fundo branco, fio de 1px embaixo, marca com o ui-brand-mark e
+   links cinza-azulados com fio de 3px no item ativo.
    ============================================================ */
 .site-topbar {
     position: sticky;
     top: 0;
     z-index: 1030;
     background: var(--topbar-bg);
-    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
+    min-height: 76px;
 }
 
 .site-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 0.55rem 0;
+    gap: 1.5rem;
+    min-height: 76px;
     flex-wrap: wrap;
 }
 
 .site-marca {
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--sis-fonte-texto);
+    font-weight: 750;
+    font-size: 26px;
+    letter-spacing: -1px;
     color: var(--titulo);
     text-decoration: none;
     white-space: nowrap;
 }
-.site-marca i { color: var(--accent); }
-.site-marca:hover { color: var(--brand); }
-[data-theme="dark"] .site-marca:hover { color: var(--text); }
+.site-marca:hover { color: var(--titulo); }
 
 .site-nav {
     display: flex;
     align-items: center;
-    gap: 0.15rem;
+    gap: 18px;
     flex-wrap: wrap;
+    margin-left: auto;
 }
 
 .site-link {
+    display: inline-flex;
+    align-items: center;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.93rem;
-    padding: 0.35rem 0.55rem;
-    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 27px 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
     white-space: nowrap;
-    transition: color 0.15s ease, background 0.15s ease;
+    transition: color var(--sis-transicao), border-color var(--sis-transicao);
 }
-.site-link i { margin-right: 0.15rem; }
+/* o icone fica no HTML (mesmo contrato do corporativo, que esconde o .bi) */
+.site-link i { display: none; }
 .site-link:hover,
 .site-link:focus-visible {
     color: var(--titulo);
-    background: var(--brand-soft);
+    border-bottom-color: var(--accent);
+    background: transparent;
 }
 
 .site-link.site-entrar {
-    border: 1px solid var(--border);
+    border: 0;
+    border-bottom: 3px solid transparent;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-left: 0;
+}
+.site-link.site-entrar:hover {
+    border-bottom-color: var(--accent);
     color: var(--titulo);
-    font-weight: 600;
 }
 
+/* botao de tema: quadrado de 38px, igual ao #btn-tema do corporativo */
 .site-toggle {
     width: 38px;
     height: 38px;
-    border-radius: 50%;
+    border-radius: var(--sis-raio);
     border: 1px solid var(--border);
-    background: var(--surface);
+    background: transparent;
     color: var(--text);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.05rem;
-    transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    font-size: 0.95rem;
+    margin-left: 0;
+    transition: background-color var(--sis-transicao), border-color var(--sis-transicao);
 }
-.site-toggle:hover {
-    transform: rotate(15deg) scale(1.06);
-    border-color: var(--accent);
-    color: var(--accent);
+.site-toggle:hover,
+.site-toggle:focus-visible {
+    background: var(--sis-papel-baixo);
+    border-color: var(--sis-fio-forte);
+    color: var(--text);
 }
 
-@media (max-width: 575.98px) {
-    .site-link { padding: 0.3rem 0.4rem; font-size: 0.85rem; }
+@media (max-width: 991.98px) {
+    .site-topbar,
+    .site-inner { min-height: 0; }
+    .site-inner { padding: 12px 0; gap: 16px; }
+    .site-nav { gap: 0.35rem; }
+    .site-link { padding: 8px 0; font-size: 13px; }
+    .site-marca { font-size: 23px; }
     .site-toggle { width: 34px; height: 34px; }
 }
 
-/* ============================================================
-   AJUSTES DO TEMA ESCURO NA LANDING
-   A landing foi escrita para fundo claro; aqui so corrigimos as
-   cores que eram fixas (icones de servico, nota de demo).
-   ============================================================ */
-[data-theme="dark"] .card-servico .icone {
-    background: linear-gradient(135deg, #173a2b, #14301f);
+@media (max-width: 575.98px) {
+    .site-marca { font-size: 22px; }
 }
 
-[data-theme="dark"] .nota-demo code {
-    color: #c7d8ee;
+/* ============================================================
+   COMPONENTES HERDADOS DAS PAGINAS
+   (os <style> locais ainda ajustam detalhes por pagina)
+   ============================================================ */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--sis-raio);
+    box-shadow: var(--card-shadow);
 }
+
+.btn {
+    border-radius: var(--sis-raio);
+    font-size: 14px;
+    font-weight: 550;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    box-shadow: none;
+    transition: background-color var(--sis-transicao), color var(--sis-transicao),
+                border-color var(--sis-transicao);
+}
+
+/* primarios: a mesma cor nos dois temas (padrao do corporativo) */
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #0267c1;
+    --bs-btn-border-color: #0267c1;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0055a1;
+    --bs-btn-hover-border-color: #0055a1;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0055a1;
+    --bs-btn-active-border-color: #0055a1;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--accent);
+    --bs-btn-border-color: var(--border);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0267c1;
+    --bs-btn-hover-border-color: #0267c1;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0267c1;
+    --bs-btn-active-border-color: #0267c1;
+}
+
+.btn-outline-secondary,
+.btn-outline-dark {
+    --bs-btn-color: var(--text-muted);
+    --bs-btn-border-color: var(--sis-fio-forte);
+    --bs-btn-hover-color: var(--text);
+    --bs-btn-hover-bg: var(--badge-bg);
+    --bs-btn-hover-border-color: var(--text);
+}
+
+.btn-secondary {
+    --bs-btn-color: var(--text);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: var(--sis-fio-forte);
+    --bs-btn-hover-color: var(--text);
+    --bs-btn-hover-bg: var(--badge-bg);
+    --bs-btn-hover-border-color: var(--text);
+}
+
+.badge {
+    font-weight: 600;
+    letter-spacing: 0;
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 5px 8px;
+}
+
+/* selos semanticos: mesmos tons suaves do interface-corporativa.css */
+.badge.bg-success { background-color: #e7f5eb !important; color: #176b36 !important; }
+.badge.bg-warning { background-color: #fff1d4 !important; color: #713d00 !important; }
+.badge.bg-danger { background-color: #fff0e8 !important; color: #aa350c !important; }
+.badge.bg-info { background-color: #eaf4fd !important; color: var(--accent) !important; }
+.badge.bg-primary { background-color: #eaf4fd !important; color: var(--accent) !important; }
+.badge.bg-secondary, .badge.bg-dark { background-color: var(--badge-bg) !important; color: var(--text-muted) !important; }
+.badge.bg-light { background-color: var(--badge-bg) !important; color: var(--badge-text) !important; }
+
+/* CTA dos cards: o btn-success usa o mesmo azul do btn-primary */
+.btn-success {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #0267c1;
+    --bs-btn-border-color: #0267c1;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0055a1;
+    --bs-btn-hover-border-color: #0055a1;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0055a1;
+    --bs-btn-active-border-color: #0055a1;
+}
+
+/* titulos grandes das paginas internas */
+.display-4, .display-5, .display-6 {
+    font-family: var(--sis-fonte-display);
+    font-weight: 600 !important;
+    letter-spacing: -.035em;
+    line-height: 1.05;
+}
+
+.alert {
+    background-color: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+    border-left: 3px solid var(--sis-fio-forte);
+    border-radius: 6px;
+    font-size: 0.88rem;
+}
+
+.alert-success { border-left-color: var(--sis-verde); }
+.alert-warning { border-left-color: #efa00b; }
+.alert-danger { border-left-color: #d65108; }
+
+.form-control, .form-select {
+    background-color: var(--card-bg);
+    border: 1px solid var(--sis-fio-forte);
+    border-radius: var(--sis-raio);
+    color: var(--text);
+    font-size: 14px;
+    min-height: 42px;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--card-bg);
+    color: var(--text);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(2, 103, 193, 0.18);
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--text);
+    margin-bottom: 5px;
+}
+
+/* ============================================================
+   MOVIMENTO - um unico momento por pagina
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+    .hero-title, .hero-subtitle { animation: site-entra 340ms cubic-bezier(.2, .6, .3, 1) 50ms both; }
+}
+
+@keyframes site-entra {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+

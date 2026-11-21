@@ -24,7 +24,8 @@
     {% include 'core/_tema_head.html' %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    <link rel="stylesheet" href="{% static 'css/interface-corporativa.css' %}?v=20261120">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}?v=4">
     <style>
         /* Variaveis de tema (claro/escuro) e a barra de navegacao ficam em
            static/css/site.css, comum ao menu e ao detalhe de projeto.
@@ -35,77 +36,83 @@
         body {
             color: var(--text);
             background: var(--bg-1);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-            transition: background 0.3s ease, color 0.3s ease;
+            font-family: var(--sis-fonte-texto);
         }
 
-        /* ---------------- HERO ---------------- */
+        /* ---------------- HERO - capa do catalogo ---------------- */
+        /* Nao e' um banner de SaaS: e' a primeira pagina do catalogo.
+           Papel, fio duplo embaixo e o titulo em serifa fazem o trabalho
+           que antes era feito por um gradiente azul. */
         .hero {
-            background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 55%, #1d4b86 100%);
-            color: #f8fafc;
-            padding: 4.5rem 0 4rem;
+            background: var(--bg-1);
+            color: var(--text);
+            padding: 4.2rem 0 3.2rem;
+            border-bottom: 3px double var(--sis-fio-forte);
         }
         .hero h1 {
-            font-size: clamp(2rem, 4.6vw, 3.2rem);
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            line-height: 1.12;
+            font-family: var(--sis-fonte-display);
+            font-size: clamp(2.1rem, 4.8vw, 3.3rem);
+            font-weight: 600;
+            letter-spacing: -0.035em;
+            line-height: 1.05;
+            color: var(--titulo);
+            max-width: 32ch;
         }
         .hero p.lead {
-            color: #cbd8e8;
-            max-width: 44rem;
-            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 46rem;
+            font-size: 1.06rem;
         }
+        /* selo = carimbo de estado: mono, fio de 1px, sem cantos arredondados */
         .hero .selo {
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
-            padding: 0.35rem 0.8rem;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            font-size: 0.85rem;
-            color: #e2ecf8;
+            padding: 0.24rem 0.55rem;
+            border-radius: var(--sis-raio);
+            background: transparent;
+            border: 1px solid var(--sis-fio-forte);
+            font-family: var(--sis-fonte-dado);
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
         }
         .hero .selo .ponto {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: #4ade80;
-            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+            width: 6px; height: 6px;
+            background: var(--sis-verde);
         }
-        .hero .selo .ponto.off {
-            background: #f59e0b;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
-        }
+        .hero .selo .ponto.off { background: var(--sis-ambar); }
 
-        .btn-acao {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-            font-weight: 600;
+        .hero .btn-acao {
+            --bs-btn-color: var(--sis-papel-alto);
+            --bs-btn-bg: var(--accent);
+            --bs-btn-border-color: var(--accent);
+            --bs-btn-hover-color: var(--sis-papel-alto);
+            --bs-btn-hover-bg: var(--accent-dark);
+            --bs-btn-hover-border-color: var(--accent-dark);
         }
-        .btn-acao:hover, .btn-acao:focus {
-            background: var(--accent-dark);
-            border-color: var(--accent-dark);
-            color: #fff;
-        }
-        .btn-fantasma { border-color: rgba(255, 255, 255, 0.45); color: #eaf1f9; }
-        .btn-fantasma:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: #fff;
-            color: #fff;
+        /* o segundo botao era btn-outline-light (branco): no papel ele
+           precisa virar contorno de tinta */
+        .hero .btn-fantasma {
+            --bs-btn-color: var(--text);
+            --bs-btn-border-color: var(--sis-fio-forte);
+            --bs-btn-hover-color: var(--text);
+            --bs-btn-hover-bg: var(--badge-bg);
+            --bs-btn-hover-border-color: var(--text);
         }
 
         /* ---------------- SECOES ---------------- */
         .secao { padding: 3.5rem 0; }
         .secao-alt {
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
+            background: var(--bg-2);
+            border-top: 1px solid var(--sis-fio);
+            border-bottom: 1px solid var(--sis-fio);
         }
         .secao-titulo {
-            font-size: 1.75rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-family: var(--sis-fonte-display);
+            font-size: clamp(1.5rem, 2.6vw, 1.95rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
             color: var(--titulo);
         }
         .secao-desc { color: var(--text-muted); max-width: 46rem; }
@@ -115,9 +122,10 @@
            ele faz e o link para abrir. Sem destaques tecnicos, stack ou
            selo de status - isso fica no portfolio (/menu/). */
         .solucao-nome {
-            font-size: 1.08rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
+            font-family: var(--sis-fonte-display);
+            font-size: 1.18rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
             color: var(--titulo);
             margin: 0 0 0.35rem;
         }
@@ -142,51 +150,58 @@
             padding-left: 0.55rem;
             line-height: 1.45;
         }
-        .nota-demo code { color: var(--titulo); background: var(--brand-soft); padding: 0 0.2rem; }
+        .nota-demo code { color: var(--titulo); background: var(--badge-bg); padding: 0 0.2rem; }
 
         /* ---------------- SERVICOS ---------------- */
         .card-servico {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem 1.35rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--sis-raio);
+            padding: 1.4rem 1.3rem;
             height: 100%;
             box-shadow: var(--shadow);
         }
+        /* o icone deixa de ser pastilha verde e passa a ser o carimbo */
         .card-servico .icone {
-            width: 44px; height: 44px;
-            border-radius: 12px;
+            width: 40px; height: 40px;
+            border-radius: var(--sis-raio);
             display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #e7f5ec, #d3ecdc);
-            color: var(--accent-dark);
-            font-size: 1.25rem;
+            background: transparent;
+            border: 1px solid var(--sis-fio-forte);
+            color: var(--accent);
+            font-size: 1.15rem;
             margin-bottom: 0.9rem;
         }
         .card-servico h3 {
-            font-size: 1.02rem; font-weight: 700; color: var(--titulo);
+            font-family: var(--sis-fonte-display);
+            font-size: 1.06rem; font-weight: 600; color: var(--titulo);
+            letter-spacing: -0.01em;
         }
         .card-servico p {
             font-size: 0.92rem; color: var(--text-muted); margin: 0; line-height: 1.6;
         }
 
-        /* ---------------- FOOTER ---------------- */
+        /* ---------------- FOOTER - o expediente do boletim ---------------- */
         footer.rodape {
-            background: #0a1c33;
-            color: #a9bacd;
+            background: var(--bg-1);
+            color: var(--text-muted);
+            border-top: 3px double var(--sis-fio-forte);
             padding: 2.5rem 0 1.5rem;
             font-size: 0.9rem;
         }
-        footer.rodape a { color: #dbe7f5; text-decoration: none; }
-        footer.rodape a:hover { color: #fff; text-decoration: underline; }
+        footer.rodape a { color: var(--accent); text-decoration: none; }
+        footer.rodape a:hover { color: var(--accent-dark); text-decoration: underline; }
         footer.rodape .marca-rodape {
-            font-weight: 700; color: #fff; letter-spacing: -0.01em;
+            font-family: var(--sis-fonte-display);
+            font-weight: 600; color: var(--titulo); letter-spacing: -0.01em;
         }
-        footer.rodape hr { border-color: rgba(255, 255, 255, 0.12); }
+        footer.rodape hr { border-color: var(--sis-fio); opacity: 1; }
         footer.rodape .rotulo {
+            font-family: var(--sis-fonte-dado);
             text-transform: uppercase;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             letter-spacing: 0.08em;
-            color: #8fa4bb;
+            color: var(--text-muted);
         }
         @media (max-width: 575.98px) {
             .hero { padding: 3rem 0 2.5rem; }
@@ -197,7 +212,7 @@
 <body>
 
     <!-- ===================== NAV (barra comum) ===================== -->
-    {% include 'core/_topbar.html' with marca='busquecnpj' icone_marca='bi-building' ancoras=True %}
+    {% include 'core/_topbar.html' with marca='busquecnpj' ancoras=True %}
 
     <!-- ===================== HERO ===================== -->
     <header class="hero">
