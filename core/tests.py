@@ -152,7 +152,7 @@ class FontesDeDadosTests(TestCase):
 
 
 class PortfolioTests(TestCase):
-    """Raiz deste site: sempre o portfolio (nenhuma decisao por Host)."""
+    """Raiz deste site: sempre o portfolio (o produto tem dominio proprio)."""
 
     def setUp(self):
         p = patch('core.views._check_health_deep_cached', return_value=SAUDE_OK)
@@ -160,11 +160,11 @@ class PortfolioTests(TestCase):
         self.addCleanup(p.stop)
 
     @override_settings(
-        ALLOWED_HOSTS=['testserver', 'busquecnpj.com.br', 'portfolio.busquecnpj.com.br'],
+        ALLOWED_HOSTS=['testserver', 'arosasse.tec.br', 'portfolio.busquecnpj.com.br'],
     )
     def test_raiz_mostra_o_menu_em_qualquer_host(self):
-        """A landing comercial e' de outro projeto: aqui a raiz e' o menu."""
-        for host in ('testserver', 'busquecnpj.com.br',
+        """A raiz do menu.service e' o portfolio, em qualquer Host."""
+        for host in ('testserver', 'arosasse.tec.br',
                      'portfolio.busquecnpj.com.br'):
             with self.subTest(host=host):
                 resp = self.client.get('/', HTTP_HOST=host)
@@ -242,7 +242,7 @@ class BarraComumTests(TestCase):
     def test_inicio_do_portfolio_aponta_para_a_landing_do_cnpj(self):
         """O Inicio do portfolio leva ao /site/ do cnpj (dev: porta 8002)."""
         resp = self.client.get(reverse('core:menu'))
-        self.assertTrue(resp.context['landing_url'].endswith(':8002/site/'))
+        self.assertTrue(resp.context['landing_url'].endswith(':8002/'))
         self.assertIn(f'href="{resp.context["landing_url"]}"', resp.content.decode())
 
     def test_landing_url_do_env_vence_o_padrao(self):

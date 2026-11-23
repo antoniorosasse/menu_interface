@@ -49,16 +49,15 @@ LIMIAR_LENTO_MS = 2000
 # ============================================================
 # URLS DO SITE
 # ============================================================
-# Este processo (menu.service) e' so o portfolio (arosasse.tec.br). A
-# landing comercial saiu daqui: agora e' servida pelo cnpj_interface em
-# /site/ (core:landing). PORTFOLIO_URL e LANDING_URL continuam vindo do
-# .env para a virada de dominio sem mexer em codigo.
+# Este processo (menu.service) e' so o portfolio (arosasse.tec.br). Desde
+# 23/11/2026 o dominio do produto (busquecnpj.com.br) aponta direto para o
+# cnpj_interface no nginx: nao existe mais decisao por Host aqui.
 
 PORTFOLIO_URL = os.getenv('PORTFOLIO_URL', 'https://arosasse.tec.br').rstrip('/')
 
-# Pagina inicial do produto (landing comercial no cnpj_interface). No dev o
-# runserver do cnpj fica na porta 8002 (/site/); em producao e' o dominio
-# raiz. LANDING_URL no .env aponta para outro host sem mexer no codigo.
+# Pagina inicial do produto (raiz do dominio). No dev e' o runserver do cnpj
+# na 8002; LANDING_URL no .env aponta para outro host sem mexer em codigo.
+LANDING_URL_PADRAO = 'https://busquecnpj.com.br/'
 LANDING_URL = os.getenv('LANDING_URL', '').rstrip('/')
 
 
@@ -208,7 +207,7 @@ def _montar_contexto(request):
         ambiente_cor = 'warning'
     else:
         as400_base   = 'https://as400.busquecnpj.com.br'
-        cnpj_base    = 'https://cnpj.busquecnpj.com.br'
+        cnpj_base    = 'https://busquecnpj.com.br'
         chat_ia_base = 'https://chat.busquecnpj.com.br'
 
         ambiente_nome = '🚀 Produção'
@@ -220,7 +219,7 @@ def _montar_contexto(request):
     urls = {
         'as400':    f'{as400_base}/pessoas/',
         'chat_pes': f'{as400_base}/chat-pessoas/',
-        'cnpj':     f'{cnpj_base}/',
+        'cnpj':     f'{cnpj_base}/empresas/',
         'chat_emp': f'{chat_ia_base}/chat/',
         # Paginas do cnpj_interface que ganharam card proprio no menu
         'proximidade':  f'{cnpj_base}/proximidade/',
@@ -308,22 +307,22 @@ def _montar_contexto(request):
         'host_atual': host_completo,
         'portfolio_url': PORTFOLIO_URL,
         # Barra do portfolio: link "Inicio" para a pagina inicial do produto
-        # (landing comercial), que agora mora no cnpj_interface em /site/.
-        # Em dev o runserver do cnpj fica na porta 8002.
+        # (raiz do dominio), servida pelo cnpj_interface. No dev o runserver
+        # do cnpj fica na porta 8002.
         'landing_url': LANDING_URL or (
-            f'http://{host_sem_porta}:8002/site/' if is_local
-            else 'https://busquecnpj.com.br/'
+            f'http://{host_sem_porta}:8002/' if is_local
+            else LANDING_URL_PADRAO
         ),
     }
 
 
 def home(request):
     """
-    Entrada do site: sempre o portfolio.
+    Raiz do site: sempre o portfolio.
 
-    A landing comercial nao mora mais aqui - ela e' servida pelo
-    cnpj_interface em /site/ (core:landing). Este site (menu.service) e' o
-    portfolio (arosasse.tec.br), apresentado em qualquer Host.
+    O dominio do produto (busquecnpj.com.br) nao chega mais aqui - o nginx
+    o manda direto para o cnpj_interface, que serve a pagina do produto na
+    raiz. Este site (menu.service) e' o portfolio (arosasse.tec.br).
     """
     return menu_principal(request)
 
