@@ -286,6 +286,13 @@ def montar_secoes(projetos):
             'projetos': [p for p in projetos if p.get('secao') == 'as400'],
         },
     ]
+
+    # Grade de 3 colunas com 5 cards deixa a ultima linha com 2 e um vao vazio
+    # a direita. O template usa esta flag para os dois ultimos ocuparem metade
+    # cada (ver .pf-fecha-linha em portal-menu.css).
+    for secao in secoes:
+        secao['fecha_linha'] = len(secao['projetos']) % 3 == 2
+
     return secoes
 
 

@@ -71,32 +71,28 @@
                 </span>
             </div>
 
-            <!-- Demonstração ao vivo -->
+            <!-- Demonstração ao vivo (o resto dos avisos fica recolhido) -->
             <div class="hero-demo-note">
-                <i class="bi bi-broadcast me-1 text-success"></i>
+                <i class="bi bi-broadcast me-1 text-success" aria-hidden="true"></i>
                 <strong>Demonstração ao vivo:</strong>
-                este site é o próprio portfólio — as aplicações abaixo
-                estão em produção e o status de cada uma é verificado em tempo real.
-                Clique em <em>Acessar</em> (ou <em>Ver em produção</em>, no card deste site)
-                para abrir a aplicação real e no <i class="bi bi-info-circle"></i> para ver
-                a stack, os destaques técnicos e as telas de cada projeto.
+                as aplicações abaixo estão em produção e o status de cada uma é verificado
+                em tempo real. <em>Acessar</em> abre a aplicação real; o ícone
+                <i class="bi bi-info-circle" aria-hidden="true"></i> mostra stack e telas.
 
-                <span class="d-block mt-2">
-                    <i class="bi bi-key me-1"></i>
-                    <strong>Login de demonstração:</strong>
-                    o <strong>Chat com IA · Empresas</strong> exige autenticação —
-                    use usuário <code>demo</code> e senha <code>demo</code>.
-                    As consultas do chat rodam em modo somente-leitura.
-                </span>
-
-                <span class="d-block mt-2">
-                    <i class="bi bi-exclamation-triangle me-1 text-warning"></i>
-                    <strong>Dados de demonstração:</strong>
-                    a base de pessoas do <strong>AS/400</strong> (biblioteca
-                    <code>AROSASSE1</code> do IBM i <code>pub400.com</code>) é usada para
-                    testes de integração. Os registros não foram conferidos na base da
-                    Receita Federal — não use os CPFs para contato ou cadastro.
-                </span>
+                <details class="hero-demo-detalhes">
+                    <summary>Login e dados de demonstração</summary>
+                    <p class="mt-2 mb-1">
+                        <strong>Login de demonstração:</strong> o Chat com IA · Empresas exige
+                        autenticação — use <code>demo</code> / <code>demo</code>. As consultas
+                        rodam em modo somente-leitura.
+                    </p>
+                    <p class="mb-0">
+                        <strong>Dados de demonstração:</strong> a base de pessoas do AS/400
+                        (biblioteca <code>AROSASSE1</code>, IBM i <code>pub400.com</code>) é usada
+                        em testes de integração e não foi conferida na Receita Federal — não use
+                        os CPFs para contato ou cadastro.
+                    </p>
+                </details>
             </div>
 
             <!-- Dicas de portas (apenas local) -->
@@ -178,7 +174,7 @@
                     <p class="secao-desc">{{ secao.descricao }}</p>
                 </div>
             </div>
-            <div class="row g-3 justify-content-center {{ secao.classe_grid }}">
+            <div class="row g-3 justify-content-center {{ secao.classe_grid }}{% if secao.fecha_linha %} pf-fecha-linha{% endif %}">
                 {% for projeto in secao.projetos %}
                 <div class="col">
                     <article class="card card-hover h-100{% if secao.compacto %} card-compacto{% endif %}">

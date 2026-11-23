@@ -1101,3 +1101,21 @@
         box-shadow: none;
     }
 }
+
+/* Ultima linha de uma grade de 3 colunas com 2 cards: metade cada, sem vao.
+   A flag vem de montar_secoes (fecha_linha) quando o total % 3 == 2. */
+@media (min-width: 1200px) {
+    .pf-secao .row.pf-fecha-linha > .col { width: 33.3333%; }
+    .pf-secao .row.pf-fecha-linha > .col:nth-last-child(-n + 2) { width: 50%; }
+}
+
+.hero-demo-detalhes {
+    margin-top: .5rem;
+    font-size: .92rem;
+}
+.hero-demo-detalhes summary {
+    cursor: pointer;
+    color: var(--text, inherit);
+    font-weight: 600;
+}
+.hero-demo-detalhes summary:hover { text-decoration: underline; }
